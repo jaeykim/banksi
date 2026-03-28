@@ -11,7 +11,7 @@
   },
   "getStarted": "npm install banksi",
   "quickstart": {
-    "heading": "Just tell your AI.",
+    "heading": "Copy this. Paste to your AI.",
     "terminal": {
       "step1": "Installing banksi SDK...",
       "step2": "Creating paywall middleware for /api/checkout",
@@ -20,7 +20,11 @@
       "done": "Done. Crypto payments are live.",
       "promptLine1": "Add Banksi crypto payments to my cafe app.",
       "promptLine2": "Use Arbitrum and accept USDT and USDC."
-    }
+    },
+    "promptLine1": "npm install banksi and read https://banksi.vercel.app/api/docs",
+    "promptLine2": "to add crypto payments to my app.",
+    "copyHint": "Copy prompt",
+    "copied": "Copied!"
   },
   "features": {
     "heading": "Why Banksi?",

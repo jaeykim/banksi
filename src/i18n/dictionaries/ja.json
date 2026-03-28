@@ -11,7 +11,7 @@
   },
   "getStarted": "npm install banksi",
   "quickstart": {
-    "heading": "AIにひと言だけ。",
+    "heading": "このプロンプトをAIに貼り付けるだけ。",
     "terminal": {
       "step1": "banksi SDKをインストール中...",
       "step2": "/api/checkoutにペイウォールミドルウェアを作成中",
@@ -20,7 +20,11 @@
       "done": "完了。暗号資産決済が有効になりました。",
       "promptLine1": "カフェアプリにBanksiの暗号資産決済を追加して。",
       "promptLine2": "ArbitrumでUSDTとUSDCを受け付けて。"
-    }
+    },
+    "promptLine1": "npm install banksi して https://banksi.vercel.app/api/docs を読んで",
+    "promptLine2": "アプリに暗号資産決済を追加して。",
+    "copyHint": "プロンプトをコピー",
+    "copied": "コピー済み！"
   },
   "features": {
     "heading": "なぜBanksiなのか？",
