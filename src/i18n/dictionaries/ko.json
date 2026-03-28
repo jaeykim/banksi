@@ -133,5 +133,18 @@
     "t3Name": "마커스 리베라",
     "t3Role": "풀스택 개발자, 바이브코딩 매니아"
   },
-  "footer": "바이브 코더를 위한 결제 모듈."
+  "footer": "바이브 코더를 위한 결제 모듈.",
+  "demo": {
+    "demoHeading": "직접 체험해보세요",
+    "demoSubheading": "Banksi로 만든 카페 결제 데모. 메뉴 탐색, 결제, 대시보드 확인까지.",
+    "demoCard1": "Seoul Coffee",
+    "demoCard1Desc": "장바구니와 크립토 결제가 있는 카페 데모.",
+    "demoCard1Cta": "데모 체험",
+    "demoCard2": "상품 스토어",
+    "demoCard2Desc": "Banksi 호스팅 스토어. 상품 카탈로그와 직접 결제.",
+    "demoCard2Cta": "스토어 열기",
+    "demoCard3": "가맹점 대시보드",
+    "demoCard3Desc": "매출 차트, 결제 내역, 지갑 설정.",
+    "demoCard3Cta": "대시보드 열기"
+  }
 }

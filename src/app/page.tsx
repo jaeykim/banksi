@@ -474,29 +474,29 @@ export default async function Home() {
             <ScrollReveal>
               <div className="text-center mb-10">
                 <p className="text-sm font-semibold uppercase tracking-widest text-amber-600 mb-2">Live Demo</p>
-                <h2 className="text-3xl sm:text-4xl font-bold text-foreground">See it in action</h2>
-                <p className="mt-3 text-muted max-w-lg mx-auto">A crypto-powered cafe built with Banksi. Browse the menu, checkout, see the x402 flow, and check the merchant dashboard.</p>
+                <h2 className="text-3xl sm:text-4xl font-bold text-foreground">{t.demo.demoHeading}</h2>
+                <p className="mt-3 text-muted max-w-lg mx-auto">{t.demo.demoSubheading}</p>
               </div>
             </ScrollReveal>
             <ScrollReveal delay={100}>
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
                 <Link href="/examples/cafe" target="_blank" className="group rounded-2xl border border-border bg-surface p-6 hover:border-amber-300 hover:shadow-lg hover:-translate-y-0.5 transition-all">
                   <span className="text-3xl">☕</span>
-                  <h3 className="mt-3 text-sm font-semibold text-foreground group-hover:text-amber-700">Seoul Coffee</h3>
-                  <p className="mt-1 text-xs text-muted">Full cafe storefront with cart, x402 checkout, and on-chain payment flow.</p>
-                  <p className="mt-3 text-xs font-semibold text-amber-600">Try the demo &rarr;</p>
+                  <h3 className="mt-3 text-sm font-semibold text-foreground group-hover:text-amber-700">{t.demo.demoCard1}</h3>
+                  <p className="mt-1 text-xs text-muted">{t.demo.demoCard1Desc}</p>
+                  <p className="mt-3 text-xs font-semibold text-amber-600">{t.demo.demoCard1Cta} &rarr;</p>
                 </Link>
                 <Link href="/store/seoul-coffee" target="_blank" className="group rounded-2xl border border-border bg-surface p-6 hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5 transition-all">
                   <span className="text-3xl">🛒</span>
-                  <h3 className="mt-3 text-sm font-semibold text-foreground group-hover:text-primary">Product Store</h3>
-                  <p className="mt-1 text-xs text-muted">Banksi-hosted storefront with product catalog, QR codes, and direct payments.</p>
-                  <p className="mt-3 text-xs font-semibold text-primary">Open store &rarr;</p>
+                  <h3 className="mt-3 text-sm font-semibold text-foreground group-hover:text-primary">{t.demo.demoCard2}</h3>
+                  <p className="mt-1 text-xs text-muted">{t.demo.demoCard2Desc}</p>
+                  <p className="mt-3 text-xs font-semibold text-primary">{t.demo.demoCard2Cta} &rarr;</p>
                 </Link>
                 <Link href="/login" target="_blank" className="group rounded-2xl border border-border bg-surface p-6 hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5 transition-all">
                   <span className="text-3xl">📊</span>
-                  <h3 className="mt-3 text-sm font-semibold text-foreground group-hover:text-primary">Merchant Dashboard</h3>
-                  <p className="mt-1 text-xs text-muted">Revenue charts, payment history, wallet config. Login: merchant@banksi.io / merchant123</p>
-                  <p className="mt-3 text-xs font-semibold text-primary">Open dashboard &rarr;</p>
+                  <h3 className="mt-3 text-sm font-semibold text-foreground group-hover:text-primary">{t.demo.demoCard3}</h3>
+                  <p className="mt-1 text-xs text-muted">{t.demo.demoCard3Desc} Login: merchant@banksi.io / merchant123</p>
+                  <p className="mt-3 text-xs font-semibold text-primary">{t.demo.demoCard3Cta} &rarr;</p>
                 </Link>
               </div>
             </ScrollReveal>

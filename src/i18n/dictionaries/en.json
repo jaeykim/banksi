@@ -133,5 +133,18 @@
     "t3Name": "Marcus Rivera",
     "t3Role": "Full-stack dev, vibe coding enthusiast"
   },
-  "footer": "The payment module for vibe coders."
+  "footer": "The payment module for vibe coders.",
+  "demo": {
+    "demoHeading": "See it in action",
+    "demoSubheading": "A crypto-powered cafe built with Banksi. Browse the menu, checkout, and check the merchant dashboard.",
+    "demoCard1": "Seoul Coffee",
+    "demoCard1Desc": "Full cafe storefront with cart and crypto payment flow.",
+    "demoCard1Cta": "Try the demo",
+    "demoCard2": "Product Store",
+    "demoCard2Desc": "Banksi-hosted storefront with product catalog and direct payments.",
+    "demoCard2Cta": "Open store",
+    "demoCard3": "Merchant Dashboard",
+    "demoCard3Desc": "Revenue charts, payment history, wallet config.",
+    "demoCard3Cta": "Open dashboard"
+  }
 }

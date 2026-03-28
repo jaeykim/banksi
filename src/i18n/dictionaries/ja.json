@@ -133,5 +133,18 @@
     "t3Name": "Marcus Rivera",
     "t3Role": "フルスタック開発者、バイブコーディング愛好家"
   },
-  "footer": "バイブコーダーのための決済モジュール。"
+  "footer": "バイブコーダーのための決済モジュール。",
+  "demo": {
+    "demoHeading": "実際に体験してみてください",
+    "demoSubheading": "Banksiで作ったカフェ決済デモ。メニュー閲覧、決済、ダッシュボード確認まで。",
+    "demoCard1": "Seoul Coffee",
+    "demoCard1Desc": "カートと暗号資産決済のあるカフェデモ。",
+    "demoCard1Cta": "デモを試す",
+    "demoCard2": "商品ストア",
+    "demoCard2Desc": "Banksiホスティングのストア。商品カタログと直接決済。",
+    "demoCard2Cta": "ストアを開く",
+    "demoCard3": "加盟店ダッシュボード",
+    "demoCard3Desc": "売上チャート、決済履歴、ウォレット設定。",
+    "demoCard3Cta": "ダッシュボードを開く"
+  }
 }

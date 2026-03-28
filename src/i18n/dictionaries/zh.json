@@ -133,5 +133,18 @@
     "t3Name": "Marcus Rivera",
     "t3Role": "全栈开发者，氛围编程爱好者"
   },
-  "footer": "氛围编程者的支付模块。"
+  "footer": "氛围编程者的支付模块。",
+  "demo": {
+    "demoHeading": "亲自体验",
+    "demoSubheading": "用 Banksi 搭建的咖啡店支付演示。浏览菜单、结账、查看商户仪表板。",
+    "demoCard1": "Seoul Coffee",
+    "demoCard1Desc": "带购物车和加密支付流程的咖啡店演示。",
+    "demoCard1Cta": "试用演示",
+    "demoCard2": "商品商店",
+    "demoCard2Desc": "Banksi 托管的商店，带商品目录和直接支付。",
+    "demoCard2Cta": "打开商店",
+    "demoCard3": "商户仪表板",
+    "demoCard3Desc": "收入图表、支付记录、钱包配置。",
+    "demoCard3Cta": "打开仪表板"
+  }
 }
