@@ -18,8 +18,8 @@
       "step3": "Adding BanksiPayButton to checkout.tsx",
       "step4": "Configuring Arbitrum + USDT/USDC",
       "done": "Done. Crypto payments are live.",
-      "promptLine1": "Add Banksi crypto payments to my cafe app.",
-      "promptLine2": "Use Arbitrum and accept USDT and USDC."
+      "promptLine1": "npm install banksi and read https://banksi.vercel.app/api/docs to add crypto payments to my app.",
+      "promptLine2": ""
     },
     "promptLine1": "npm install banksi and read https://banksi.vercel.app/api/docs",
     "promptLine2": "to add crypto payments to my app.",

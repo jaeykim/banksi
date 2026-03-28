@@ -18,8 +18,8 @@
       "step3": "checkout.tsx에 BanksiPayButton 추가 중",
       "step4": "Arbitrum + USDT/USDC 설정 중",
       "done": "완료. 크립토 결제가 연동됐어.",
-      "promptLine1": "내 카페 앱에 Banksi 크립토 결제를 붙여줘.",
-      "promptLine2": "Arbitrum에서 USDT랑 USDC 받게 해줘."
+      "promptLine1": "npm install banksi 하고 https://banksi.vercel.app/api/docs 문서를 읽고 내 앱에 크립토 결제를 붙여줘.",
+      "promptLine2": ""
     },
     "promptLine1": "npm install banksi 하고 https://banksi.vercel.app/api/docs 문서를 읽고",
     "promptLine2": "내 앱에 크립토 결제를 붙여줘.",

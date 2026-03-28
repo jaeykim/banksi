@@ -23,7 +23,7 @@ interface Props {
 export function PromptCopyBlock({ t }: Props) {
   const [copied, setCopied] = useState(false);
 
-  const promptText = `${t.quickstart.terminal.promptLine1} ${t.quickstart.terminal.promptLine2}`;
+  const promptText = t.quickstart.terminal.promptLine1;
 
   async function handleCopy() {
     await navigator.clipboard.writeText(promptText);
@@ -75,8 +75,7 @@ export function PromptCopyBlock({ t }: Props) {
               onClick={handleCopy}
               title="Click to copy"
             >
-              {t.quickstart.terminal.promptLine1}<br />
-              {t.quickstart.terminal.promptLine2}
+              {t.quickstart.terminal.promptLine1}
             </p>
           </div>
 

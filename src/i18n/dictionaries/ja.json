@@ -18,8 +18,8 @@
       "step3": "checkout.tsxにBanksiPayButtonを追加中",
       "step4": "Arbitrum + USDT/USDCを設定中",
       "done": "完了。暗号資産決済が有効になりました。",
-      "promptLine1": "カフェアプリにBanksiの暗号資産決済を追加して。",
-      "promptLine2": "ArbitrumでUSDTとUSDCを受け付けて。"
+      "promptLine1": "npm install banksi して https://banksi.vercel.app/api/docs を読んでアプリに暗号資産決済を追加して。",
+      "promptLine2": ""
     },
     "promptLine1": "npm install banksi して https://banksi.vercel.app/api/docs を読んで",
     "promptLine2": "アプリに暗号資産決済を追加して。",

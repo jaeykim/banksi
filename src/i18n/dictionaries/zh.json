@@ -18,8 +18,8 @@
       "step3": "正在将 BanksiPayButton 添加到 checkout.tsx",
       "step4": "正在配置 Arbitrum + USDT/USDC",
       "done": "搞定。加密支付已上线。",
-      "promptLine1": "给我的咖啡店应用接入 Banksi 加密支付。",
-      "promptLine2": "用 Arbitrum 链，接受 USDT 和 USDC。"
+      "promptLine1": "npm install banksi 然后读 https://banksi.vercel.app/api/docs 给我的应用接入加密支付。",
+      "promptLine2": ""
     },
     "promptLine1": "npm install banksi 然后读 https://banksi.vercel.app/api/docs",
     "promptLine2": "给我的应用接入加密支付。",
