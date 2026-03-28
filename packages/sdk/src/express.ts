@@ -35,7 +35,7 @@ export function createBanksiPaywall(config: PaywallConfig) {
     }
 
     const chains = await client.listChains();
-    const banksiUrl = config.baseUrl || process.env.BANKSI_URL || 'http://localhost:3001';
+    const banksiUrl = config.baseUrl || process.env.BANKSI_URL || 'https://banksi.vercel.app';
     const merchantSlug = config.merchantSlug || process.env.BANKSI_MERCHANT_SLUG || '';
 
     res.status(402).json({

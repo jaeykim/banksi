@@ -1,6 +1,6 @@
 {
   "name": "banksi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Crypto payment module for vibe coders. Add USDT/USDC payments to any app in one prompt.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,20 +26,36 @@
       "require": "./dist/react.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["crypto", "payments", "usdt", "usdc", "x402", "stablecoin", "mcp", "vibe-coding"],
+  "keywords": [
+    "crypto",
+    "payments",
+    "usdt",
+    "usdc",
+    "x402",
+    "stablecoin",
+    "mcp",
+    "vibe-coding"
+  ],
   "license": "MIT",
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18"
   },
   "peerDependenciesMeta": {
-    "react": { "optional": true },
-    "react-dom": { "optional": true }
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "tsup": "^8.0.0",

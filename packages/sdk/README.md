@@ -11,8 +11,8 @@ npm install banksi
 ## Environment Variables
 
 ```env
-BANKSI_API_KEY=bks_your_key_here   # from banksi.io/merchant/settings
-BANKSI_URL=https://banksi.io       # optional, defaults to https://banksi.io
+BANKSI_API_KEY=bks_your_key_here   # from banksi.vercel.app/merchant/settings
+BANKSI_URL=https://banksi.vercel.app       # optional, defaults to https://banksi.vercel.app
 ```
 
 ## Next.js — Paywall Middleware
@@ -79,6 +79,6 @@ AI agents can integrate Banksi using the MCP server:
 
 ## Links
 
-- [Docs](https://banksi.io/docs)
-- [Dashboard](https://banksi.io/merchant)
-- [Demo](https://banksi.io/examples/cafe)
+- [Docs](https://banksi.vercel.app/docs)
+- [Dashboard](https://banksi.vercel.app/merchant)
+- [Demo](https://banksi.vercel.app/examples/cafe)

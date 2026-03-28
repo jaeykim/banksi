@@ -32,7 +32,7 @@ export interface Chain {
 
 function getConfig(override?: Partial<BanksiConfig>): BanksiConfig {
   return {
-    baseUrl: override?.baseUrl || process.env.BANKSI_URL || 'https://banksi.io',
+    baseUrl: override?.baseUrl || process.env.BANKSI_URL || 'https://banksi.vercel.app',
     merchantSlug: override?.merchantSlug || process.env.BANKSI_MERCHANT_SLUG || undefined,
     apiKey: override?.apiKey || process.env.BANKSI_API_KEY || undefined,
   };

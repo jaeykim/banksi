@@ -210,7 +210,7 @@ server.tool(
       data: { merchantId: merchant.id, name, priceUsd, description: description || null },
     });
 
-    const baseUrl = process.env.BANKSI_URL || 'http://localhost:3001';
+    const baseUrl = process.env.BANKSI_URL || 'https://banksi.vercel.app';
     const paymentLink = `${baseUrl}/pay/select/${merchant.slug}/${product.id}`;
 
     return {
@@ -244,7 +244,7 @@ server.tool(
       orderBy: { name: 'asc' },
     });
 
-    const baseUrl = process.env.BANKSI_URL || 'http://localhost:3001';
+    const baseUrl = process.env.BANKSI_URL || 'https://banksi.vercel.app';
     const result = products.map((p) => ({
       ...p,
       paymentLink: `${baseUrl}/pay/select/${merchant.slug}/${p.id}`,
@@ -268,7 +268,7 @@ server.tool(
     const product = await prisma.product.findUnique({ where: { id: productId } });
     if (!product || product.merchantId !== merchant.id) return { content: [{ type: 'text', text: `Product "${productId}" not found.` }] };
 
-    const baseUrl = process.env.BANKSI_URL || 'http://localhost:3001';
+    const baseUrl = process.env.BANKSI_URL || 'https://banksi.vercel.app';
     const paymentLink = `${baseUrl}/pay/select/${merchant.slug}/${product.id}`;
 
     return {
@@ -336,7 +336,7 @@ npm install banksi
 
 ## 2. Set environment variables
 \`\`\`env
-BANKSI_URL=http://localhost:3001
+BANKSI_URL=https://banksi.vercel.app
 BANKSI_MERCHANT_SLUG=your-store
 \`\`\`
 
@@ -364,7 +364,7 @@ import { BanksiPayButton } from 'banksi/react';
 
 <BanksiPayButton
   amount={0.10}
-  baseUrl="http://localhost:3001"
+  baseUrl="https://banksi.vercel.app"
   merchantSlug="your-store"
   onPaymentConfirmed={(id) => console.log('Paid!', id)}
 />
@@ -410,7 +410,7 @@ npm install banksi
 
 ## 2. Set environment variables
 \`\`\`env
-BANKSI_URL=http://localhost:3001
+BANKSI_URL=https://banksi.vercel.app
 BANKSI_MERCHANT_SLUG=your-store
 \`\`\`
 
@@ -449,7 +449,7 @@ function PremiumContent() {
     return (
       <BanksiPayButton
         amount={0.10}
-        baseUrl="http://localhost:3001"
+        baseUrl="https://banksi.vercel.app"
         merchantSlug="your-store"
         onPaymentConfirmed={() => setPaid(true)}
       />
@@ -523,7 +523,7 @@ server.tool(
 import { BanksiClient } from 'banksi';
 
 const client = new BanksiClient({
-  baseUrl: 'http://localhost:3001',  // or BANKSI_URL env
+  baseUrl: 'https://banksi.vercel.app',  // or BANKSI_URL env
   merchantSlug: 'your-store',        // or BANKSI_MERCHANT_SLUG env
 });
 
@@ -595,7 +595,7 @@ server.tool(
     merchantSlug: z.string().optional().describe('Merchant slug to validate'),
   },
   async ({ banksiUrl, merchantSlug }) => {
-    const url = banksiUrl || process.env.BANKSI_URL || 'http://localhost:3001';
+    const url = banksiUrl || process.env.BANKSI_URL || 'https://banksi.vercel.app';
     const slug = merchantSlug || process.env.BANKSI_MERCHANT_SLUG || '';
     const results: string[] = [];
 
