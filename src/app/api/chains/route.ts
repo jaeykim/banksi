@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { corsHeaders, corsOptionsResponse } from '@/lib/cors';
 
+export const dynamic = 'force-dynamic';
+
 export async function OPTIONS() { return corsOptionsResponse(); }
 
 export async function GET() {
