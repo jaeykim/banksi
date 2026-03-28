@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth & Roles ───────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         String   @default("USER") // USER, MERCHANT, ADMIN
+  merchantId   String?
+  merchant     Merchant? @relation(fields: [merchantId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── Merchant ───────────────────────────────────────
+
+model Merchant {
+  id              String           @id @default(cuid())
+  name            String
+  slug            String           @unique
+  isActive        Boolean          @default(true)
+  storeDescription String?
+  storeLogo        String?
+  storeBannerColor String?          @default("#3730a3")
+  storeIsPublic    Boolean          @default(true)
+  users           User[]
+  products        Product[]
+  payments        Payment[]
+  merchantWallets MerchantWallet[]
+  hdWalletConfig  HdWalletConfig?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Product {
+  id          String    @id @default(cuid())
+  merchantId  String
+  merchant    Merchant  @relation(fields: [merchantId], references: [id])
+  name        String
+  description String?
+  priceUsd    Float
+  imageUrl    String?
+  isActive    Boolean   @default(true)
+  payments    Payment[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ─── Wallet Management ──────────────────────────────
+
+model HdWalletConfig {
+  id                   String   @id @default(cuid())
+  merchantId           String   @unique
+  merchant             Merchant @relation(fields: [merchantId], references: [id])
+  encryptedMnemonic    String
+  encryptionIv         String
+  encryptionTag        String
+  derivationPathPrefix String   @default("m/44'/60'/0'/0")
+  nextDerivationIndex  Int      @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model MerchantWallet {
+  id         String   @id @default(cuid())
+  merchantId String
+  merchant   Merchant @relation(fields: [merchantId], references: [id])
+  chainId    String
+  chain      Chain    @relation(fields: [chainId], references: [id])
+  address    String
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([merchantId, chainId])
+}
+
+// ─── Chain & Token Config ───────────────────────────
+
+model Chain {
+  id               String           @id
+  name             String
+  chainIdNum       Int?
+  rpcUrl           String
+  explorerUrl      String
+  isEvm            Boolean          @default(true)
+  isActive         Boolean          @default(true)
+  tokens           Token[]
+  merchantWallets  MerchantWallet[]
+  payments         Payment[]
+  derivedAddresses DerivedAddress[]
+  sweepJobs        SweepJob[]
+}
+
+model Token {
+  id              String    @id @default(cuid())
+  chainId         String
+  chain           Chain     @relation(fields: [chainId], references: [id])
+  symbol          String
+  name            String
+  contractAddress String
+  decimals        Int       @default(6)
+  isActive        Boolean   @default(true)
+  payments        Payment[]
+
+  @@unique([chainId, symbol])
+}
+
+// ─── Payments ───────────────────────────────────────
+
+model Payment {
+  id             String          @id @default(cuid())
+  merchantId     String
+  merchant       Merchant        @relation(fields: [merchantId], references: [id])
+  productId      String?
+  product        Product?        @relation(fields: [productId], references: [id])
+  chainId        String
+  chain          Chain           @relation(fields: [chainId], references: [id])
+  tokenId        String
+  token          Token           @relation(fields: [tokenId], references: [id])
+  amountExpected String
+  amountReceived String?
+  currency       String          @default("USD")
+  fiatAmount     Float
+  status         String          @default("PENDING")
+  derivedAddress DerivedAddress?
+  txHash         String?
+  paidAt         DateTime?
+  expiresAt      DateTime
+  metadata       String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model DerivedAddress {
+  id              String   @id @default(cuid())
+  merchantId      String
+  chainId         String
+  chain           Chain    @relation(fields: [chainId], references: [id])
+  address         String
+  derivationIndex Int
+  derivationPath  String
+  paymentId       String?  @unique
+  payment         Payment? @relation(fields: [paymentId], references: [id])
+  isFunded        Boolean  @default(false)
+  isSwept         Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@unique([merchantId, chainId, derivationIndex])
+}
+
+// ─── Sweep Jobs ─────────────────────────────────────
+
+model SweepJob {
+  id           String   @id @default(cuid())
+  merchantId   String
+  chainId      String
+  chain        Chain    @relation(fields: [chainId], references: [id])
+  fromAddress  String
+  toAddress    String
+  amount       String
+  txHash       String?
+  status       String   @default("PENDING")
+  errorMessage String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
