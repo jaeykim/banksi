@@ -58,7 +58,12 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
       amountExpected,
     });
 
-    return NextResponse.json({ paymentId: result.paymentId }, { status: 201 });
+    return NextResponse.json({
+      paymentId: result.paymentId,
+      address: result.address,
+      amountExpected: result.amountExpected,
+      expiresAt: result.expiresAt,
+    }, { status: 201 });
   } catch (error) {
     console.error('Error creating storefront payment:', error);
     const message =

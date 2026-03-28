@@ -33,6 +33,15 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Payment not found' }, { status: 404 });
     }
 
+    // Auto-expire PENDING payments past their expiry
+    if (payment.status === 'PENDING' && payment.expiresAt < new Date()) {
+      await prisma.payment.update({
+        where: { id: paymentId },
+        data: { status: 'EXPIRED' },
+      });
+      payment.status = 'EXPIRED';
+    }
+
     // Build explorer URL for transaction if available
     let txExplorerUrl: string | null = null;
     if (payment.txHash && payment.chain.explorerUrl) {

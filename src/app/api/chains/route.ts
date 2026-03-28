@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { corsHeaders, corsOptionsResponse } from '@/lib/cors';
+
+export async function OPTIONS() { return corsOptionsResponse(); }
 
 export async function GET() {
   try {
@@ -21,7 +24,7 @@ export async function GET() {
       orderBy: { name: 'asc' },
     });
 
-    return NextResponse.json({ chains });
+    return corsHeaders(NextResponse.json({ chains }));
   } catch (error) {
     console.error('Error listing chains:', error);
     return NextResponse.json(

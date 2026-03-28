@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D4943A"/>
+      <stop offset="100%" style="stop-color:#A0652A"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="24" fill="url(#bg)"/>
+  <!-- Tall glass -->
+  <rect x="145" y="80" width="110" height="200" rx="12" fill="#FFFFFF" opacity="0.2" stroke="#FFFFFF" stroke-width="3" stroke-opacity="0.6"/>
+  <!-- Milk layer (bottom) -->
+  <rect x="148" y="200" width="104" height="77" rx="10" fill="#F5F0EB" opacity="0.85"/>
+  <!-- Coffee layer (middle) -->
+  <rect x="148" y="150" width="104" height="55" fill="#8B5E3C" opacity="0.8"/>
+  <!-- Foam layer (top) -->
+  <rect x="148" y="100" width="104" height="55" rx="10" fill="#FFF5E6" opacity="0.9"/>
+  <!-- Caramel drizzle -->
+  <path d="M165 105 Q170 120 160 135 Q155 145 165 155" fill="none" stroke="#C67A2A" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  <path d="M195 100 Q200 118 190 130 Q185 142 195 150" fill="none" stroke="#C67A2A" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  <path d="M225 105 Q230 120 220 135 Q215 145 225 155" fill="none" stroke="#C67A2A" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  <!-- Whipped cream bump -->
+  <ellipse cx="200" cy="95" rx="45" ry="15" fill="#FFFDF5" opacity="0.9"/>
+  <ellipse cx="200" cy="88" rx="30" ry="10" fill="#FFFDF5" opacity="0.85"/>
+  <!-- Caramel top drizzle -->
+  <path d="M180 85 Q195 92 210 84" fill="none" stroke="#C67A2A" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+  <!-- Label -->
+  <text x="200" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="600" fill="#FFFFFF" text-anchor="middle" opacity="0.95">Caramel Macchiato</text>
+</svg>

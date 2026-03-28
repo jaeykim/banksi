@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A2520"/>
+      <stop offset="100%" style="stop-color:#2A1510"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="24" fill="url(#bg)"/>
+  <!-- Cake slice - side (triangular shape) -->
+  <path d="M120 260 L200 120 L280 260Z" fill="#5C2E1A"/>
+  <!-- Cake layers -->
+  <rect x="120" y="220" width="160" height="40" fill="#5C2E1A"/>
+  <!-- Layer 1 - bottom -->
+  <path d="M127 260 L273 260 L280 260 L120 260Z" fill="#6B3425"/>
+  <!-- Layer line (cream) -->
+  <line x1="128" y1="240" x2="272" y2="240" stroke="#8B6040" stroke-width="4" opacity="0.7"/>
+  <line x1="145" y1="205" x2="255" y2="205" stroke="#8B6040" stroke-width="4" opacity="0.7"/>
+  <line x1="163" y1="170" x2="237" y2="170" stroke="#8B6040" stroke-width="4" opacity="0.7"/>
+  <!-- Chocolate frosting drip on top edge -->
+  <path d="M155 155 L200 120 L245 155" fill="#3D1A10" opacity="0.8"/>
+  <!-- Frosting top -->
+  <path d="M195 120 Q200 112 205 120" fill="#6B3425"/>
+  <!-- Cherry on top -->
+  <circle cx="200" cy="112" r="10" fill="#C0392B"/>
+  <path d="M200 102 Q205 95 210 98" fill="none" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/>
+  <!-- Chocolate shavings -->
+  <rect x="155" y="225" width="12" height="4" rx="2" fill="#3D1A10" opacity="0.5" transform="rotate(-15 161 227)"/>
+  <rect x="220" y="230" width="10" height="3" rx="1.5" fill="#3D1A10" opacity="0.5" transform="rotate(20 225 231)"/>
+  <rect x="185" y="245" width="14" height="4" rx="2" fill="#3D1A10" opacity="0.4" transform="rotate(-8 192 247)"/>
+  <!-- Plate -->
+  <ellipse cx="200" cy="268" rx="100" ry="12" fill="#F5F0EB" opacity="0.15"/>
+  <!-- Label -->
+  <text x="200" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="600" fill="#F5E6D3" text-anchor="middle" opacity="0.95">Chocolate Cake</text>
+</svg>

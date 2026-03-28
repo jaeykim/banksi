@@ -1,0 +1,133 @@
+{
+  "header": {
+    "signIn": "Sign In",
+    "docs": "Docs"
+  },
+  "hero": {
+    "badge": "The payment module for vibe coders",
+    "title": "Add crypto payments",
+    "titleHighlight": "in one prompt",
+    "description": "You're building with AI. You need payments. Just tell your agent \"add Banksi\" — it reads the MCP tools, installs the SDK, and wires up x402 paywalls. USDT & USDC on 5 chains, zero config."
+  },
+  "getStarted": "npm install banksi",
+  "quickstart": {
+    "heading": "Just tell your AI.",
+    "terminal": {
+      "step1": "Installing banksi SDK...",
+      "step2": "Creating paywall middleware for /api/checkout",
+      "step3": "Adding BanksiPayButton to checkout.tsx",
+      "step4": "Configuring Arbitrum + USDT/USDC",
+      "done": "Done. Crypto payments are live.",
+      "promptLine1": "Add Banksi crypto payments to my cafe app.",
+      "promptLine2": "Use Arbitrum and accept USDT and USDC."
+    }
+  },
+  "features": {
+    "heading": "Why Banksi?",
+    "subheading": "The simplest way to add crypto payments to your AI-built app.",
+    "multiChain": "5 Chains, 1 SDK",
+    "multiChainDesc": "Ethereum, BSC, Arbitrum, Tron, Solana — all supported out of the box. HD wallets generate unique addresses per payment.",
+    "secure": "One-Line Paywall",
+    "secureDesc": "createBanksiPaywall({ amount: 0.10 }) — that's the entire integration. Your API returns 402, clients pay on-chain, retry with receipt.",
+    "monitoring": "AI-Native",
+    "monitoringDesc": "MCP server included. Your AI agent can read the SDK docs, generate integration code, and test it — without you writing a line.",
+    "x402": "x402 Protocol",
+    "x402Desc": "HTTP 402 Payment Required, reimagined for crypto. Any endpoint becomes pay-per-use. AI agents handle the whole flow autonomously."
+  },
+  "howItWorks": {
+    "heading": "How It Works",
+    "subheading": "From prompt to payments in 4 steps.",
+    "step1Title": "Tell Your AI",
+    "step1Desc": "\"Add crypto payments with Banksi.\" Your AI agent calls get_integration_guide via MCP.",
+    "step2Title": "Agent Installs SDK",
+    "step2Desc": "npm install banksi — the agent generates middleware code and wires it to your routes.",
+    "step3Title": "API Returns 402",
+    "step3Desc": "Unpaid requests get a machine-readable 402 with chain, token, amount, and deposit address.",
+    "step4Title": "User Pays On-Chain",
+    "step4Desc": "Send USDT/USDC to the address. Retry with X-Payment header. Access granted."
+  },
+  "pricing": {
+    "heading": "Simple Pricing",
+    "subheading": "No monthly fees. No setup costs. Just a small fee per successful payment.",
+    "fee": "1%",
+    "feeLabel": "per transaction",
+    "feeDesc": "Only charged on successful payments. Swept automatically during fund settlement.",
+    "item1": "No monthly subscription",
+    "item2": "No setup or integration fee",
+    "item3": "Free for testnet usage",
+    "item4": "Self-hosted option: 0% fee"
+  },
+  "forBanks": {
+    "title": "For API Builders",
+    "item1": "Paywall any endpoint with a single middleware function",
+    "item2": "x402 protocol returns machine-readable payment instructions",
+    "item3": "AI agents can pay your API autonomously via MCP",
+    "item4": "Configurable pricing per route — micropayments to subscriptions"
+  },
+  "forMerchants": {
+    "title": "For App Builders",
+    "item1": "Drop-in BanksiPayButton React component",
+    "item2": "Network and token selection UI built in",
+    "item3": "Real-time payment polling with confirmation callbacks",
+    "item4": "Works with any Banksi instance — self-hosted or cloud"
+  },
+  "paymentPreview": {
+    "heading": "What Your Users See",
+    "subheading": "A clean, mobile-friendly payment flow. Select network, choose token, pay — done.",
+    "selectNetwork": "Select Network",
+    "payWith": "Pay with",
+    "youWillPay": "You will pay",
+    "on": "on",
+    "waitingForPayment": "Waiting for payment",
+    "sendExactly": "Send exactly",
+    "toAddress": "To this address",
+    "tapToCopy": "Tap to copy address"
+  },
+  "x402": {
+    "heading": "x402: Programmable Payments",
+    "subheading": "HTTP 402 Payment Required — reimagined for crypto. Any API can become pay-per-use with a single middleware.",
+    "item1Title": "402 Payment Required",
+    "item1Desc": "Protected endpoints return a machine-readable 402 response with payment instructions — chain, token, amount, and deposit address.",
+    "item2Title": "Pay On-Chain",
+    "item2Desc": "Client sends stablecoin to the unique address. No accounts, no API keys — just a blockchain transaction.",
+    "item3Title": "Access Granted",
+    "item3Desc": "Retry the request with the payment receipt. The server verifies on-chain and returns the content.",
+    "badge1": "API Monetization",
+    "badge2": "AI Agent Payments",
+    "badge3": "Micropayments"
+  },
+  "mcp": {
+    "heading": "Your AI Agent Knows Banksi",
+    "subheading": "The MCP server gives your AI agent everything it needs — SDK docs, code generation, integration testing. Just say \"add payments\" and it handles the rest.",
+    "tool1": "get_integration_guide",
+    "tool1Desc": "Full setup guide for Next.js / Express / React",
+    "tool2": "generate_paywall_code",
+    "tool2Desc": "Ready-to-paste middleware for your route",
+    "tool3": "get_sdk_reference",
+    "tool3Desc": "Complete SDK API docs for autonomous coding",
+    "tool4": "validate_integration",
+    "tool4Desc": "Test that Banksi is reachable and configured",
+    "docsLink": "Read MCP Docs"
+  },
+  "cta": {
+    "heading": "Add payments in your next prompt.",
+    "subheading": "Install the SDK. Tell your AI agent to do the rest. USDT & USDC on 5 chains, no smart contracts.",
+    "demo": "Try Demo Store",
+    "docs": "Read the Docs",
+    "example": "Live Cafe Example"
+  },
+  "testimonials": {
+    "heading": "Builders Ship Faster",
+    "subheading": "What vibe coders are saying.",
+    "t1": "I told Claude Code to add payments. It called the MCP server, installed the SDK, and wired up x402 in 3 minutes. I didn't write a line.",
+    "t1Name": "James Park",
+    "t1Role": "Indie hacker, shipping with AI",
+    "t2": "We needed micropayments for our API. Banksi's x402 middleware was literally one line. Our AI customers pay autonomously now.",
+    "t2Name": "Sophia Chen",
+    "t2Role": "Founder, DataPipe AI",
+    "t3": "The MCP integration tools are insane. My Cursor agent reads the SDK reference and generates perfect paywall code every time.",
+    "t3Name": "Marcus Rivera",
+    "t3Role": "Full-stack dev, vibe coding enthusiast"
+  },
+  "footer": "The payment module for vibe coders."
+}

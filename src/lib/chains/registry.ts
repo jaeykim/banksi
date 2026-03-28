@@ -88,25 +88,35 @@ const CHAIN_CONFIGS: Record<string, ChainConfig> = {
 const adapterCache = new Map<string, ChainAdapter>();
 
 // ---------------------------------------------------------------------------
+// DB chain ID → registry chain ID mapping
+// ---------------------------------------------------------------------------
+
+const DB_CHAIN_ALIASES: Record<string, string> = {
+  ethereum: 'evm:1',
+  polygon: 'evm:137',
+  bsc: 'evm:56',
+  arbitrum: 'evm:42161',
+  tron: 'tron:mainnet',
+  solana: 'solana:mainnet',
+};
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
 /**
  * Returns a ChainAdapter for the given chain ID.
  *
- * Chain IDs follow the format `<type>:<network>`, e.g.:
- *  - `evm:1`           (Ethereum mainnet)
- *  - `evm:137`         (Polygon)
- *  - `tron:mainnet`    (Tron mainnet)
- *  - `solana:mainnet`  (Solana mainnet)
- *
+ * Accepts both registry format (`evm:1`) and DB format (`ethereum`).
  * Adapters are cached so the same instance is reused across calls.
  */
 export function getChainAdapter(chainId: string): ChainAdapter {
-  const cached = adapterCache.get(chainId);
+  const resolvedId = DB_CHAIN_ALIASES[chainId] || chainId;
+
+  const cached = adapterCache.get(resolvedId);
   if (cached) return cached;
 
-  const config = CHAIN_CONFIGS[chainId];
+  const config = CHAIN_CONFIGS[resolvedId];
   if (!config) {
     throw new Error(
       `Unknown chain "${chainId}". Supported chains: ${Object.keys(CHAIN_CONFIGS).join(', ')}`,
@@ -137,7 +147,9 @@ export function getChainAdapter(chainId: string): ChainAdapter {
       throw new Error(`Unsupported chain type: ${config.type}`);
   }
 
-  adapterCache.set(chainId, adapter);
+  adapterCache.set(resolvedId, adapter);
+  // Also cache under the original key for fast lookup next time
+  if (resolvedId !== chainId) adapterCache.set(chainId, adapter);
   return adapter;
 }
 

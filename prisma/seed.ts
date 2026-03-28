@@ -25,6 +25,7 @@ async function main() {
       rpcUrl: "https://polygon-rpc.com",
       explorerUrl: "https://polygonscan.com",
       isEvm: true,
+      isActive: false,
     },
     {
       id: "bsc",
@@ -223,14 +224,14 @@ async function main() {
 
   // Demo products
   const products = [
-    { name: "Americano", description: "Classic black coffee", priceUsd: 4.5 },
-    { name: "Cafe Latte", description: "Espresso with steamed milk", priceUsd: 5.5 },
-    { name: "Cappuccino", description: "Espresso, steamed milk & foam", priceUsd: 5.5 },
-    { name: "Caramel Macchiato", description: "Vanilla, milk, espresso & caramel drizzle", priceUsd: 6.0 },
-    { name: "Matcha Latte", description: "Premium Japanese matcha with milk", priceUsd: 6.5 },
-    { name: "Croissant", description: "Freshly baked butter croissant", priceUsd: 3.5 },
-    { name: "Chocolate Cake", description: "Rich dark chocolate layer cake", priceUsd: 7.0 },
-    { name: "Blueberry Muffin", description: "Homemade muffin with fresh blueberries", priceUsd: 4.0 },
+    { name: "Americano", description: "Classic black coffee", priceUsd: 4.5, imageUrl: "/uploads/products/americano.svg" },
+    { name: "Cafe Latte", description: "Espresso with steamed milk", priceUsd: 5.5, imageUrl: "/uploads/products/cafe-latte.svg" },
+    { name: "Cappuccino", description: "Espresso, steamed milk & foam", priceUsd: 5.5, imageUrl: "/uploads/products/cappuccino.svg" },
+    { name: "Caramel Macchiato", description: "Vanilla, milk, espresso & caramel drizzle", priceUsd: 6.0, imageUrl: "/uploads/products/caramel-macchiato.svg" },
+    { name: "Matcha Latte", description: "Premium Japanese matcha with milk", priceUsd: 6.5, imageUrl: "/uploads/products/matcha-latte.svg" },
+    { name: "Croissant", description: "Freshly baked butter croissant", priceUsd: 3.5, imageUrl: "/uploads/products/croissant.svg" },
+    { name: "Chocolate Cake", description: "Rich dark chocolate layer cake", priceUsd: 7.0, imageUrl: "/uploads/products/chocolate-cake.svg" },
+    { name: "Blueberry Muffin", description: "Homemade muffin with fresh blueberries", priceUsd: 4.0, imageUrl: "/uploads/products/blueberry-muffin.svg" },
   ];
 
   for (const p of products) {
@@ -240,6 +241,11 @@ async function main() {
     if (!existing) {
       await prisma.product.create({
         data: { ...p, merchantId: demoMerchant.id },
+      });
+    } else if (!existing.imageUrl && p.imageUrl) {
+      await prisma.product.update({
+        where: { id: existing.id },
+        data: { imageUrl: p.imageUrl },
       });
     }
   }
@@ -271,6 +277,27 @@ async function main() {
 
   console.log("Seeded demo merchant: Seoul Coffee (merchant@banksi.io / merchant123)");
   console.log(`Seeded ${products.length} demo products`);
+
+  // ─── System Settings ─────────────────────────────────
+
+  const defaultSettings = [
+    { key: "sweep_fee_percent", value: "1.0" },
+    { key: "sweep_fee_address", value: "" },
+    { key: "auto_sweep_enabled", value: "false" },
+    { key: "auto_sweep_interval_minutes", value: "10" },
+    { key: "payment_expiry_minutes", value: "30" },
+    { key: "required_confirmations", value: "3" },
+  ];
+
+  for (const s of defaultSettings) {
+    await prisma.systemSetting.upsert({
+      where: { key: s.key },
+      update: {},
+      create: s,
+    });
+  }
+
+  console.log(`Seeded ${defaultSettings.length} system settings`);
 
   console.log("Seeding complete.");
 }

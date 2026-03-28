@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D4A574"/>
+      <stop offset="100%" style="stop-color:#B8865C"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="24" fill="url(#bg)"/>
+  <!-- Cup (top view) -->
+  <circle cx="200" cy="180" r="100" fill="#FFFFFF" opacity="0.95"/>
+  <circle cx="200" cy="180" r="90" fill="#E8D5C0"/>
+  <!-- Latte art (leaf/rosetta) -->
+  <path d="M200 130 Q185 155 175 180 Q185 170 200 165 Q215 170 225 180 Q215 155 200 130Z" fill="#8B5E3C" opacity="0.7"/>
+  <path d="M200 150 Q190 165 185 180" fill="none" stroke="#8B5E3C" stroke-width="2" opacity="0.5"/>
+  <path d="M200 150 Q210 165 215 180" fill="none" stroke="#8B5E3C" stroke-width="2" opacity="0.5"/>
+  <line x1="200" y1="165" x2="200" y2="210" stroke="#8B5E3C" stroke-width="2.5" opacity="0.6"/>
+  <path d="M200 175 Q190 190 183 200" fill="none" stroke="#8B5E3C" stroke-width="2" opacity="0.5"/>
+  <path d="M200 175 Q210 190 217 200" fill="none" stroke="#8B5E3C" stroke-width="2" opacity="0.5"/>
+  <path d="M200 190 Q193 200 188 210" fill="none" stroke="#8B5E3C" stroke-width="2" opacity="0.4"/>
+  <path d="M200 190 Q207 200 212 210" fill="none" stroke="#8B5E3C" stroke-width="2" opacity="0.4"/>
+  <!-- Cup rim highlight -->
+  <circle cx="200" cy="180" r="100" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.5"/>
+  <!-- Label -->
+  <text x="200" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="600" fill="#FFFFFF" text-anchor="middle" opacity="0.95">Cafe Latte</text>
+</svg>

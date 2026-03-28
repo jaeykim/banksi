@@ -30,6 +30,12 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     const status = searchParams.get('status');
     const skip = (page - 1) * limit;
 
+    // Bulk-expire PENDING payments past their expiry time
+    await prisma.payment.updateMany({
+      where: { merchantId, status: 'PENDING', expiresAt: { lt: new Date() } },
+      data: { status: 'EXPIRED' },
+    });
+
     const where: Record<string, unknown> = { merchantId };
     if (status) {
       where.status = status.toUpperCase();

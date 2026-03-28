@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { ChainIcon } from '@/components/chain-icon';
+import { TokenIcon } from '@/components/token-icon';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -251,8 +253,18 @@ export default function AdminPaymentsPage() {
                     <td className="px-4 py-3 text-muted">
                       ${p.fiatAmount.toFixed(2)} {p.currency}
                     </td>
-                    <td className="px-4 py-3 text-muted">{p.chainName}</td>
-                    <td className="px-4 py-3 text-muted">{p.tokenSymbol}</td>
+                    <td className="px-4 py-3 text-muted">
+                      <span className="inline-flex items-center gap-1.5">
+                        <ChainIcon chainId={p.chainId} size={16} />
+                        {p.chainName}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-muted">
+                      <span className="inline-flex items-center gap-1.5">
+                        <TokenIcon symbol={p.tokenSymbol} size={16} />
+                        {p.tokenSymbol}
+                      </span>
+                    </td>
                     <td className="px-4 py-3">
                       <StatusBadge status={p.status} />
                     </td>

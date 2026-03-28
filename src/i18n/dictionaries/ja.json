@@ -1,0 +1,133 @@
+{
+  "header": {
+    "signIn": "ログイン",
+    "docs": "ドキュメント"
+  },
+  "hero": {
+    "badge": "バイブコーダーのための決済モジュール",
+    "title": "暗号資産決済を",
+    "titleHighlight": "ひと言で導入",
+    "description": "AIで開発しているあなたに、決済機能が必要。AIエージェントに「Banksiを追加して」と伝えるだけ。MCPツールを読み取り、SDKをインストールし、x402ペイウォールを構築します。5チェーン対応のUSDT & USDC、設定不要。"
+  },
+  "getStarted": "npm install banksi",
+  "quickstart": {
+    "heading": "AIにひと言だけ。",
+    "terminal": {
+      "step1": "banksi SDKをインストール中...",
+      "step2": "/api/checkoutにペイウォールミドルウェアを作成中",
+      "step3": "checkout.tsxにBanksiPayButtonを追加中",
+      "step4": "Arbitrum + USDT/USDCを設定中",
+      "done": "完了。暗号資産決済が有効になりました。",
+      "promptLine1": "カフェアプリにBanksiの暗号資産決済を追加して。",
+      "promptLine2": "ArbitrumでUSDTとUSDCを受け付けて。"
+    }
+  },
+  "features": {
+    "heading": "なぜBanksiなのか？",
+    "subheading": "AI開発アプリに暗号資産決済を追加する最もシンプルな方法。",
+    "multiChain": "5チェーン、1つのSDK",
+    "multiChainDesc": "Ethereum、BSC、Arbitrum、Tron、Solana — すべて標準対応。HDウォレットが決済ごとにユニークなアドレスを生成します。",
+    "secure": "ワンライン・ペイウォール",
+    "secureDesc": "createBanksiPaywall({ amount: 0.10 }) — これが統合のすべて。APIが402を返し、クライアントがオンチェーンで支払い、レシート付きでリトライ。",
+    "monitoring": "AIネイティブ",
+    "monitoringDesc": "MCPサーバー内蔵。AIエージェントがSDKドキュメントを読み、統合コードを生成し、テストまで — あなたは一行も書かずに。",
+    "x402": "x402プロトコル",
+    "x402Desc": "HTTP 402 Payment Required を暗号資産向けに再設計。あらゆるエンドポイントが従量課金に。AIエージェントがフロー全体を自律的に処理します。"
+  },
+  "howItWorks": {
+    "heading": "仕組み",
+    "subheading": "プロンプトから決済まで、4ステップ。",
+    "step1Title": "AIに伝える",
+    "step1Desc": "「Banksiで暗号資産決済を追加して」。AIエージェントがMCP経由でget_integration_guideを呼び出します。",
+    "step2Title": "エージェントがSDKをインストール",
+    "step2Desc": "npm install banksi — エージェントがミドルウェアコードを生成し、ルートに接続します。",
+    "step3Title": "APIが402を返す",
+    "step3Desc": "未払いのリクエストには、チェーン・トークン・金額・入金アドレスを含む機械可読な402が返されます。",
+    "step4Title": "ユーザーがオンチェーンで支払う",
+    "step4Desc": "USDT/USDCをアドレスに送金。X-Paymentヘッダー付きでリトライ。アクセスが許可されます。"
+  },
+  "pricing": {
+    "heading": "シンプルな料金",
+    "subheading": "月額料金なし。セットアップ費用なし。成功した決済ごとに少額の手数料のみ。",
+    "fee": "1%",
+    "feeLabel": "トランザクションごと",
+    "feeDesc": "決済が成功した場合のみ課金。集金時に自動的に差し引かれます。",
+    "item1": "月額サブスクリプションなし",
+    "item2": "セットアップ・統合費用なし",
+    "item3": "テストネット利用は無料",
+    "item4": "セルフホスト：手数料0%"
+  },
+  "forBanks": {
+    "title": "API開発者向け",
+    "item1": "ミドルウェア関数1つであらゆるエンドポイントをペイウォール化",
+    "item2": "x402プロトコルが機械可読な決済指示を返す",
+    "item3": "AIエージェントがMCP経由でAPIに自律的に支払い可能",
+    "item4": "ルートごとの柔軟な価格設定 — マイクロペイメントからサブスクリプションまで"
+  },
+  "forMerchants": {
+    "title": "アプリ開発者向け",
+    "item1": "ドロップインのBanksiPayButton Reactコンポーネント",
+    "item2": "ネットワーク・トークン選択UIを内蔵",
+    "item3": "確認コールバック付きリアルタイム決済ポーリング",
+    "item4": "あらゆるBanksiインスタンスに対応 — セルフホストでもクラウドでも"
+  },
+  "paymentPreview": {
+    "heading": "ユーザーが見る画面",
+    "subheading": "クリーンでモバイル対応の決済フロー。ネットワーク選択、トークン選択、支払い — 完了。",
+    "selectNetwork": "ネットワーク選択",
+    "payWith": "支払い方法",
+    "youWillPay": "支払額",
+    "on": "",
+    "waitingForPayment": "決済待ち",
+    "sendExactly": "正確に送金",
+    "toAddress": "入金アドレス",
+    "tapToCopy": "タップしてコピー"
+  },
+  "x402": {
+    "heading": "x402: プログラマブル決済",
+    "subheading": "HTTP 402 Payment Required — 暗号資産向けに再設計。ミドルウェア1つであらゆるAPIを従量課金に。",
+    "item1Title": "402 Payment Required",
+    "item1Desc": "保護されたエンドポイントが、チェーン・トークン・金額・入金アドレスを含む機械可読な402レスポンスを返します。",
+    "item2Title": "オンチェーンで支払う",
+    "item2Desc": "クライアントがユニークアドレスにステーブルコインを送信。アカウントもAPIキーも不要 — ブロックチェーン取引だけ。",
+    "item3Title": "アクセス許可",
+    "item3Desc": "決済レシート付きでリクエストを再送信。サーバーがオンチェーンで検証しコンテンツを返します。",
+    "badge1": "API収益化",
+    "badge2": "AIエージェント決済",
+    "badge3": "マイクロペイメント"
+  },
+  "mcp": {
+    "heading": "AIエージェントはBanksiを知っている",
+    "subheading": "MCPサーバーがAIエージェントに必要なすべてを提供 — SDKドキュメント、コード生成、統合テスト。「決済を追加して」と言うだけで、あとはエージェントにお任せ。",
+    "tool1": "get_integration_guide",
+    "tool1Desc": "Next.js / Express / React 向けの完全セットアップガイド",
+    "tool2": "generate_paywall_code",
+    "tool2Desc": "ルートにそのまま貼れるミドルウェアコード",
+    "tool3": "get_sdk_reference",
+    "tool3Desc": "自律コーディングのための完全なSDK APIドキュメント",
+    "tool4": "validate_integration",
+    "tool4Desc": "Banksiが到達可能で正しく設定されているかテスト",
+    "docsLink": "MCPドキュメントを見る"
+  },
+  "cta": {
+    "heading": "次のプロンプトで決済を追加しよう。",
+    "subheading": "SDKをインストール。あとはAIエージェントに任せるだけ。5チェーン対応のUSDT & USDC、スマートコントラクト不要。",
+    "demo": "デモストアを試す",
+    "docs": "ドキュメントを見る",
+    "example": "カフェデモを見る"
+  },
+  "testimonials": {
+    "heading": "ビルダーはもっと速く出荷する",
+    "subheading": "バイブコーダーたちの声。",
+    "t1": "Claude Codeに決済を追加してと伝えたら、MCPサーバーを呼び出し、SDKをインストールし、x402を3分で構築してくれました。一行も書いていません。",
+    "t1Name": "James Park",
+    "t1Role": "インディーハッカー、AIで開発中",
+    "t2": "APIにマイクロペイメントが必要でした。Banksiのx402ミドルウェアは文字通り1行。AI顧客が今は自律的に支払っています。",
+    "t2Name": "Sophia Chen",
+    "t2Role": "創業者、DataPipe AI",
+    "t3": "MCP統合ツールがすごい。CursorエージェントがSDKリファレンスを読んで、毎回完璧なペイウォールコードを生成します。",
+    "t3Name": "Marcus Rivera",
+    "t3Role": "フルスタック開発者、バイブコーディング愛好家"
+  },
+  "footer": "バイブコーダーのための決済モジュール。"
+}

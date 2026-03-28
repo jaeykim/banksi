@@ -4,6 +4,8 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState, useCallback } from 'react';
 import { PaymentStatusBadge } from '@/components/payment/payment-status';
 import { QrDisplay } from '@/components/payment/qr-display';
+import { ChainIcon } from '@/components/chain-icon';
+import { TokenIcon } from '@/components/token-icon';
 
 interface Chain {
   id: string;
@@ -30,9 +32,11 @@ interface Payment {
   fiatAmount: number;
   currency: string;
   status: string;
-  chainName: string;
-  tokenSymbol: string;
-  derivedAddress: string;
+  txHash: string | null;
+  chain: { id: string; name: string };
+  token: { id: string; symbol: string; name: string };
+  product?: { id: string; name: string } | null;
+  derivedAddress?: { address: string; derivationPath: string } | null;
   createdAt: string;
   expiresAt: string;
 }
@@ -324,6 +328,7 @@ export default function MerchantPaymentsPage() {
               <th className="px-4 py-3 font-medium text-muted">Amount</th>
               <th className="px-4 py-3 font-medium text-muted">Chain</th>
               <th className="px-4 py-3 font-medium text-muted">Token</th>
+              <th className="px-4 py-3 font-medium text-muted">Deposit Address</th>
               <th className="px-4 py-3 font-medium text-muted">Status</th>
               <th className="px-4 py-3 font-medium text-muted">Created</th>
               <th className="px-4 py-3 font-medium text-muted">Actions</th>
@@ -332,7 +337,7 @@ export default function MerchantPaymentsPage() {
           <tbody>
             {payments.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-muted">
+                <td colSpan={8} className="px-4 py-8 text-center text-muted">
                   No payments yet. Create your first payment above.
                 </td>
               </tr>
@@ -347,14 +352,29 @@ export default function MerchantPaymentsPage() {
                 </td>
                 <td className="px-4 py-3 text-foreground">
                   <div>
-                    {payment.amountExpected} {payment.tokenSymbol}
+                    {payment.amountExpected} {payment.token.symbol}
                   </div>
                   <div className="text-xs text-muted">
                     ${payment.fiatAmount.toFixed(2)} {payment.currency}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-foreground">{payment.chainName}</td>
-                <td className="px-4 py-3 text-foreground">{payment.tokenSymbol}</td>
+                <td className="px-4 py-3 text-foreground">
+                  <span className="inline-flex items-center gap-1.5">
+                    <ChainIcon chainId={payment.chain.id} size={16} />
+                    {payment.chain.name}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-foreground">
+                  <span className="inline-flex items-center gap-1.5">
+                    <TokenIcon symbol={payment.token.symbol} size={16} />
+                    {payment.token.symbol}
+                  </span>
+                </td>
+                <td className="px-4 py-3 font-mono text-xs text-muted">
+                  {payment.derivedAddress?.address
+                    ? `${payment.derivedAddress.address.slice(0, 6)}...${payment.derivedAddress.address.slice(-4)}`
+                    : '-'}
+                </td>
                 <td className="px-4 py-3">
                   <PaymentStatusBadge status={payment.status} />
                 </td>
@@ -408,11 +428,14 @@ export default function MerchantPaymentsPage() {
             </div>
 
             <div className="text-center space-y-1">
-              <p className="text-2xl font-bold text-foreground">
-                {qrPayment.amountExpected} {qrPayment.tokenSymbol}
+              <p className="text-2xl font-bold text-foreground inline-flex items-center justify-center gap-2">
+                <TokenIcon symbol={qrPayment.token.symbol} size={24} />
+                {qrPayment.amountExpected} {qrPayment.token.symbol}
               </p>
-              <p className="text-sm text-muted">
-                ${qrPayment.fiatAmount.toFixed(2)} on {qrPayment.chainName}
+              <p className="text-sm text-muted inline-flex items-center justify-center gap-1.5">
+                ${qrPayment.fiatAmount.toFixed(2)} on
+                <ChainIcon chainId={qrPayment.chain.id} size={16} />
+                {qrPayment.chain.name}
               </p>
             </div>
 
@@ -426,7 +449,7 @@ export default function MerchantPaymentsPage() {
             <div className="space-y-1">
               <p className="text-xs font-medium text-muted">Address</p>
               <p className="rounded-lg bg-surface-alt px-3 py-2 font-mono text-xs text-foreground break-all">
-                {qrPayment.derivedAddress}
+                {qrPayment.derivedAddress?.address ?? 'Generating...'}
               </p>
             </div>
 

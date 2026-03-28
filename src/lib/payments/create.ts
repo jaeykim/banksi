@@ -75,7 +75,8 @@ export async function createPayment(input: CreatePaymentInput) {
     include: { payment: true },
   });
 
-  const expiryMinutes = parseInt(process.env.PAYMENT_EXPIRY_MINUTES || '30');
+  const expirySetting = await prisma.systemSetting.findUnique({ where: { key: 'payment_expiry_minutes' } });
+  const expiryMinutes = expirySetting ? parseInt(expirySetting.value) : parseInt(process.env.PAYMENT_EXPIRY_MINUTES || '30');
   const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
 
   let result: { payment: { id: string; amountExpected: string; chainId: string; tokenId: string; currency: string; fiatAmount: number; status: string; expiresAt: Date; createdAt: Date }; derivedAddress: { address: string; derivationPath: string } };
@@ -116,16 +117,14 @@ export async function createPayment(input: CreatePaymentInput) {
       hdConfig.encryptionTag,
     );
 
-    // Determine chain type from the chain ID format (evm:*, tron:*, solana:*)
+    // Determine chain type from chain properties
     let chainType: ChainType;
-    if (chainId.startsWith('evm:')) {
+    if (chain.isEvm) {
       chainType = 'evm';
-    } else if (chainId.startsWith('tron:')) {
+    } else if (chainId === 'tron' || chainId.startsWith('tron:') || chain.name.toLowerCase().includes('tron')) {
       chainType = 'tron';
-    } else if (chainId.startsWith('solana:')) {
-      chainType = 'solana';
     } else {
-      chainType = chain.isEvm ? 'evm' : 'solana';
+      chainType = 'solana';
     }
 
     const derivationIndex = hdConfig.nextDerivationIndex;

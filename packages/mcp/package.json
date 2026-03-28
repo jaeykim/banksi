@@ -1,0 +1,11 @@
+{
+  "name": "banksi-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Banksi crypto payments. AI agents can create payments, manage products, and integrate Banksi into any project.",
+  "bin": {
+    "banksi-mcp": "./bin/run.js"
+  },
+  "files": ["bin", "README.md"],
+  "keywords": ["mcp", "banksi", "crypto", "payments", "ai-agent"],
+  "license": "MIT"
+}

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5B8C3E"/>
+      <stop offset="100%" style="stop-color:#3D6B2E"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="24" fill="url(#bg)"/>
+  <!-- Cup (top view) -->
+  <circle cx="200" cy="180" r="105" fill="#FFFFFF" opacity="0.95"/>
+  <circle cx="200" cy="180" r="95" fill="#8FBC5A"/>
+  <!-- Foam swirl -->
+  <circle cx="200" cy="180" r="85" fill="#A8D474" opacity="0.6"/>
+  <!-- Latte art heart -->
+  <path d="M200 155 Q185 140 175 155 Q165 172 200 200 Q235 172 225 155 Q215 140 200 155Z" fill="#F5F0EB" opacity="0.7"/>
+  <!-- Matcha powder specks -->
+  <circle cx="160" cy="160" r="2" fill="#3D6B2E" opacity="0.3"/>
+  <circle cx="235" cy="170" r="1.5" fill="#3D6B2E" opacity="0.25"/>
+  <circle cx="180" cy="210" r="2" fill="#3D6B2E" opacity="0.3"/>
+  <circle cx="220" cy="200" r="1.5" fill="#3D6B2E" opacity="0.2"/>
+  <!-- Cup rim -->
+  <circle cx="200" cy="180" r="105" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.5"/>
+  <!-- Small leaf accent -->
+  <path d="M245 135 Q260 125 265 110" fill="none" stroke="#F5F0EB" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+  <path d="M248 133 Q258 130 268 120" fill="none" stroke="#F5F0EB" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+  <!-- Label -->
+  <text x="200" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="600" fill="#FFFFFF" text-anchor="middle" opacity="0.95">Matcha Latte</text>
+</svg>

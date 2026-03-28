@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8B84B"/>
+      <stop offset="100%" style="stop-color:#C4862B"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="24" fill="url(#bg)"/>
+  <!-- Croissant body -->
+  <path d="M100 210 Q120 150 170 140 Q200 130 230 140 Q280 150 300 210 Q280 230 250 225 Q230 220 200 225 Q170 220 150 225 Q120 230 100 210Z" fill="#E8A832" opacity="0.95"/>
+  <!-- Croissant top curve -->
+  <path d="M120 205 Q140 165 180 155 Q200 148 220 155 Q260 165 280 205" fill="#D49428" opacity="0.9"/>
+  <!-- Layer lines -->
+  <path d="M135 195 Q165 175 200 172 Q235 175 265 195" fill="none" stroke="#C07A20" stroke-width="2" opacity="0.5"/>
+  <path d="M145 205 Q170 188 200 185 Q230 188 255 205" fill="none" stroke="#C07A20" stroke-width="2" opacity="0.5"/>
+  <!-- Left tip -->
+  <path d="M100 210 Q85 200 80 185 Q82 175 95 180 Q105 190 100 210Z" fill="#D49428" opacity="0.9"/>
+  <!-- Right tip -->
+  <path d="M300 210 Q315 200 320 185 Q318 175 305 180 Q295 190 300 210Z" fill="#D49428" opacity="0.9"/>
+  <!-- Shine highlights -->
+  <path d="M160 160 Q180 152 200 150" fill="none" stroke="#F5D680" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+  <path d="M170 175 Q190 168 205 167" fill="none" stroke="#F5D680" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+  <!-- Label -->
+  <text x="200" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="600" fill="#FFFFFF" text-anchor="middle" opacity="0.95">Croissant</text>
+</svg>

@@ -1,0 +1,133 @@
+{
+  "header": {
+    "signIn": "로그인",
+    "docs": "문서"
+  },
+  "hero": {
+    "badge": "바이브 코더를 위한 결제 모듈",
+    "title": "크립토 결제,",
+    "titleHighlight": "프롬프트 하나로",
+    "description": "AI로 서비스를 만들고 있다면, 결제도 AI에게 맡기세요. \"Banksi 결제 추가해줘\"라고 하면 MCP로 SDK를 이해하고, x402 페이월을 자동으로 구성합니다. 5개 체인에서 USDT & USDC 지원."
+  },
+  "getStarted": "npm install banksi",
+  "quickstart": {
+    "heading": "AI에게 한마디면 끝.",
+    "terminal": {
+      "step1": "banksi SDK 설치 중...",
+      "step2": "/api/checkout에 페이월 미들웨어 생성 중",
+      "step3": "checkout.tsx에 BanksiPayButton 추가 중",
+      "step4": "Arbitrum + USDT/USDC 설정 중",
+      "done": "완료. 크립토 결제가 연동됐어.",
+      "promptLine1": "내 카페 앱에 Banksi 크립토 결제를 붙여줘.",
+      "promptLine2": "Arbitrum에서 USDT랑 USDC 받게 해줘."
+    }
+  },
+  "features": {
+    "heading": "왜 Banksi인가?",
+    "subheading": "AI로 만든 앱에 크립토 결제를 붙이는 가장 쉬운 방법.",
+    "multiChain": "5개 체인, 1개 SDK",
+    "multiChainDesc": "Ethereum, BSC, Arbitrum, Tron, Solana를 모두 지원. HD 월렛이 결제마다 고유 주소를 자동 생성합니다.",
+    "secure": "한 줄 페이월",
+    "secureDesc": "createBanksiPaywall({ amount: 0.10 }) — 이게 전부입니다. API가 402를 반환하고, 클라이언트가 온체인 결제 후 영수증으로 재요청합니다.",
+    "monitoring": "AI 네이티브",
+    "monitoringDesc": "MCP 서버 내장. AI 에이전트가 SDK 문서를 읽고, 통합 코드를 생성하고, 테스트까지 합니다.",
+    "x402": "x402 프로토콜",
+    "x402Desc": "HTTP 402 Payment Required를 크립토용으로 재설계. 모든 엔드포인트가 종량제로 전환. AI 에이전트가 자율적으로 결제합니다."
+  },
+  "howItWorks": {
+    "heading": "이용 방법",
+    "subheading": "프롬프트에서 결제까지 4단계.",
+    "step1Title": "AI에게 말하세요",
+    "step1Desc": "\"Banksi로 크립토 결제 추가해줘.\" AI가 MCP로 get_integration_guide를 호출합니다.",
+    "step2Title": "에이전트가 SDK 설치",
+    "step2Desc": "npm install banksi — 에이전트가 미들웨어 코드를 생성하고 라우트에 연결합니다.",
+    "step3Title": "API가 402 반환",
+    "step3Desc": "미결제 요청은 체인, 토큰, 금액, 입금 주소가 포함된 402 응답을 받습니다.",
+    "step4Title": "유저가 온체인 결제",
+    "step4Desc": "주소로 USDT/USDC 전송. X-Payment 헤더로 재요청. 접근 허용."
+  },
+  "pricing": {
+    "heading": "심플한 요금제",
+    "subheading": "월 구독료 없음. 설정 비용 없음. 결제 성공 시 소액의 수수료만.",
+    "fee": "1%",
+    "feeLabel": "트랜잭션당",
+    "feeDesc": "결제가 성공한 경우에만 부과됩니다. 집금(sweep) 시 자동으로 차감됩니다.",
+    "item1": "월 구독료 없음",
+    "item2": "설정 및 연동 비용 없음",
+    "item3": "테스트넷 무료 사용",
+    "item4": "셀프호스팅 시 수수료 0%"
+  },
+  "forBanks": {
+    "title": "API 빌더를 위한",
+    "item1": "미들웨어 함수 하나로 모든 엔드포인트에 페이월 적용",
+    "item2": "x402 프로토콜이 기계 판독 가능한 결제 지시를 반환",
+    "item3": "AI 에이전트가 MCP를 통해 API에 자율 결제",
+    "item4": "라우트별 가격 설정 — 마이크로페이먼트부터 구독까지"
+  },
+  "forMerchants": {
+    "title": "앱 빌더를 위한",
+    "item1": "BanksiPayButton 리액트 컴포넌트 드롭인",
+    "item2": "네트워크/토큰 선택 UI 내장",
+    "item3": "실시간 결제 폴링 + 확인 콜백",
+    "item4": "셀프호스팅 또는 클라우드 Banksi 인스턴스와 호환"
+  },
+  "paymentPreview": {
+    "heading": "유저가 보는 결제 화면",
+    "subheading": "깔끔하고 모바일 친화적인 결제 플로우. 네트워크 선택, 토큰 선택, 결제 — 끝.",
+    "selectNetwork": "네트워크 선택",
+    "payWith": "결제 수단",
+    "youWillPay": "결제 금액",
+    "on": "",
+    "waitingForPayment": "결제 대기 중",
+    "sendExactly": "정확히 전송",
+    "toAddress": "입금 주소",
+    "tapToCopy": "탭하여 주소 복사"
+  },
+  "x402": {
+    "heading": "x402: 프로그래밍 가능한 결제",
+    "subheading": "HTTP 402 Payment Required — 크립토를 위해 재설계. 미들웨어 하나로 모든 API를 종량제로.",
+    "item1Title": "402 Payment Required",
+    "item1Desc": "보호된 엔드포인트가 결제 정보를 포함한 402 응답을 반환합니다.",
+    "item2Title": "온체인 결제",
+    "item2Desc": "고유 주소로 스테이블코인 전송. 계정도 API 키도 필요 없음.",
+    "item3Title": "접근 허용",
+    "item3Desc": "결제 영수증으로 재요청하면 서버가 온체인 검증 후 콘텐츠를 반환.",
+    "badge1": "API 수익화",
+    "badge2": "AI 에이전트 결제",
+    "badge3": "마이크로페이먼트"
+  },
+  "mcp": {
+    "heading": "AI 에이전트가 Banksi를 압니다",
+    "subheading": "MCP 서버가 AI 에이전트에게 필요한 모든 것을 제공합니다 — SDK 문서, 코드 생성, 통합 테스트. \"결제 추가해줘\"라고만 하세요.",
+    "tool1": "get_integration_guide",
+    "tool1Desc": "Next.js / Express / React 설정 가이드",
+    "tool2": "generate_paywall_code",
+    "tool2Desc": "바로 붙여넣을 수 있는 미들웨어 코드",
+    "tool3": "get_sdk_reference",
+    "tool3Desc": "자율 코딩을 위한 SDK API 전체 문서",
+    "tool4": "validate_integration",
+    "tool4Desc": "Banksi 연결 및 설정 검증",
+    "docsLink": "MCP 문서 보기"
+  },
+  "cta": {
+    "heading": "다음 프롬프트에 결제를 추가하세요.",
+    "subheading": "SDK를 설치하고 AI 에이전트에게 맡기세요. 5개 체인에서 USDT & USDC, 스마트 컨트랙트 불필요.",
+    "demo": "데모 스토어 보기",
+    "docs": "문서 보기",
+    "example": "카페 예시 보기"
+  },
+  "testimonials": {
+    "heading": "빌더들이 더 빠르게 출시합니다",
+    "subheading": "바이브 코더들의 후기.",
+    "t1": "Claude Code에게 결제 추가하라고 했더니, MCP 서버를 호출하고, SDK를 설치하고, 3분 만에 x402를 구성했어요. 코드를 한 줄도 안 썼습니다.",
+    "t1Name": "박재현",
+    "t1Role": "인디 해커, AI로 개발 중",
+    "t2": "API에 마이크로페이먼트가 필요했는데, Banksi x402 미들웨어가 진짜 한 줄이었어요. AI 고객들이 이제 자율적으로 결제합니다.",
+    "t2Name": "첸소피아",
+    "t2Role": "파운더, DataPipe AI",
+    "t3": "MCP 통합 도구가 미쳤어요. Cursor 에이전트가 SDK 레퍼런스를 읽고 매번 완벽한 페이월 코드를 생성합니다.",
+    "t3Name": "마커스 리베라",
+    "t3Role": "풀스택 개발자, 바이브코딩 매니아"
+  },
+  "footer": "바이브 코더를 위한 결제 모듈."
+}

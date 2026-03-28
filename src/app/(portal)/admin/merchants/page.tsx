@@ -28,7 +28,6 @@ export default function AdminMerchantsPage() {
   const [formEmail, setFormEmail] = useState('');
   const [formPassword, setFormPassword] = useState('');
   const [creating, setCreating] = useState(false);
-  const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function fetchMerchants() {
@@ -83,26 +82,6 @@ export default function AdminMerchantsPage() {
       setError(err instanceof Error ? err.message : 'Failed to create merchant');
     } finally {
       setCreating(false);
-    }
-  }
-
-  async function handleGenerateMnemonic(merchantId: string) {
-    setGeneratingId(merchantId);
-    try {
-      const res = await fetch('/api/admin/mnemonics', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ merchantId }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Failed to generate mnemonic');
-      }
-      await fetchMerchants();
-    } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : 'Failed to generate mnemonic');
-    } finally {
-      setGeneratingId(null);
     }
   }
 
@@ -212,6 +191,7 @@ export default function AdminMerchantsPage() {
               <th className="px-4 py-3 font-medium text-muted">HD Wallet</th>
               <th className="px-4 py-3 font-medium text-muted">Users</th>
               <th className="px-4 py-3 font-medium text-muted">Actions</th>
+
             </tr>
           </thead>
           <tbody>
@@ -267,17 +247,6 @@ export default function AdminMerchantsPage() {
                     >
                       Store
                     </Link>
-                    {!m.hdWalletConfig && (
-                      <button
-                        onClick={() => handleGenerateMnemonic(m.id)}
-                        disabled={generatingId === m.id}
-                        className="rounded-lg bg-primary px-3 py-1 text-xs font-medium text-white hover:bg-primary-light transition-colors disabled:opacity-50"
-                      >
-                        {generatingId === m.id
-                          ? 'Generating...'
-                          : 'Generate Mnemonic'}
-                      </button>
-                    )}
                   </div>
                 </td>
               </tr>

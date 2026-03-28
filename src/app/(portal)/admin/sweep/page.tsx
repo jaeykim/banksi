@@ -20,6 +20,10 @@ interface SweepJob {
   fromAddress: string;
   toAddress: string;
   amount: string;
+  merchantAmount: string | null;
+  feeAmount: string | null;
+  feePercent: number | null;
+  feeTxHash: string | null;
   txHash: string | null;
   status: string;
   errorMessage: string | null;
@@ -290,7 +294,9 @@ export default function AdminSweepPage() {
                 <tr className="border-b border-border text-left text-xs text-muted">
                   <th className="px-4 py-3 font-medium">From</th>
                   <th className="px-4 py-3 font-medium">To</th>
-                  <th className="px-4 py-3 font-medium">Amount</th>
+                  <th className="px-4 py-3 font-medium">Total</th>
+                  <th className="px-4 py-3 font-medium">Merchant</th>
+                  <th className="px-4 py-3 font-medium">Fee</th>
                   <th className="px-4 py-3 font-medium">Chain</th>
                   <th className="px-4 py-3 font-medium">Status</th>
                   <th className="px-4 py-3 font-medium">Tx Hash</th>
@@ -310,6 +316,19 @@ export default function AdminSweepPage() {
                       {truncateAddress(job.toAddress)}
                     </td>
                     <td className="px-4 py-3 text-foreground">{job.amount}</td>
+                    <td className="px-4 py-3 text-foreground">
+                      {job.merchantAmount || job.amount}
+                    </td>
+                    <td className="px-4 py-3 text-muted">
+                      {job.feeAmount ? (
+                        <span title={job.feeTxHash ? `Fee TX: ${job.feeTxHash}` : 'Fee pending'}>
+                          {job.feeAmount}
+                          <span className="text-xs ml-1">({job.feePercent}%)</span>
+                        </span>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-muted">{job.chainName}</td>
                     <td className="px-4 py-3">
                       <StatusBadge status={job.status} />

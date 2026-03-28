@@ -4,6 +4,8 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { usePaymentStatus } from '@/hooks/use-payment-status';
+import { ChainIcon } from '@/components/chain-icon';
+import { TokenIcon } from '@/components/token-icon';
 
 interface PaymentData {
   id: string;
@@ -15,7 +17,7 @@ interface PaymentData {
   chain: { id: string; name: string };
   token: { id: string; symbol: string; name: string; decimals: number; contractAddress?: string };
   merchant: { name: string };
-  product: { name: string; description: string | null } | null;
+  product: { name: string; description: string | null; imageUrl?: string | null } | null;
   txHash: string | null;
   expiresAt: string;
 }
@@ -24,7 +26,6 @@ const CHAIN_ID_MAP: Record<string, number> = {
   ethereum: 1, polygon: 137, bsc: 56, arbitrum: 42161,
 };
 
-// Build ERC-20 transfer deeplink data
 function buildErc20TransferData(to: string, amount: string, decimals: number): string {
   const amountBig = BigInt(Math.round(parseFloat(amount) * (10 ** decimals)));
   const toHex = to.toLowerCase().replace('0x', '').padStart(64, '0');
@@ -33,62 +34,37 @@ function buildErc20TransferData(to: string, amount: string, decimals: number): s
 }
 
 interface WalletDef {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
-  getDeepLink: (p: {
-    chainId: number; to: string; tokenContract?: string;
-    amount: string; decimals: number; pageUrl: string;
-  }) => string | null;
+  id: string; name: string; icon: string; color: string;
+  getDeepLink: (p: { chainId: number; to: string; tokenContract?: string; amount: string; decimals: number; pageUrl: string }) => string | null;
 }
 
 const WALLETS: WalletDef[] = [
-  {
-    id: 'metamask',
-    name: 'MetaMask',
-    icon: '🦊',
-    color: 'bg-orange-500',
-    getDeepLink: ({ to, tokenContract, amount, decimals, pageUrl }) => {
-      // MetaMask mobile deeplink: open dapp browser with current page
-      // The page will then use window.ethereum to send the tx
-      return `metamask://dapp/${pageUrl.replace(/^https?:\/\//, '')}`;
-    },
-  },
-  {
-    id: 'coinbase',
-    name: 'Coinbase Wallet',
-    icon: '🔵',
-    color: 'bg-blue-500',
-    getDeepLink: ({ pageUrl }) => {
-      return `cbwallet://dapp?url=${encodeURIComponent(pageUrl)}`;
-    },
-  },
-  {
-    id: 'trust',
-    name: 'Trust Wallet',
-    icon: '🛡️',
-    color: 'bg-blue-700',
+  { id: 'metamask', name: 'MetaMask', icon: '🦊', color: '#E2761B',
+    getDeepLink: ({ pageUrl }) => `metamask://dapp/${pageUrl.replace(/^https?:\/\//, '')}` },
+  { id: 'coinbase', name: 'Coinbase', icon: '🔵', color: '#0052FF',
+    getDeepLink: ({ pageUrl }) => `cbwallet://dapp?url=${encodeURIComponent(pageUrl)}` },
+  { id: 'trust', name: 'Trust', icon: '🛡️', color: '#3375BB',
     getDeepLink: ({ to, tokenContract, amount, decimals, chainId }) => {
-      // Trust Wallet uses WalletConnect or transfer deeplinks
-      if (tokenContract) {
-        const data = buildErc20TransferData(to, amount, decimals);
-        return `trust://send?asset=c${chainId}&to=${tokenContract}&data=${data}`;
-      }
+      if (tokenContract) { const data = buildErc20TransferData(to, amount, decimals); return `trust://send?asset=c${chainId}&to=${tokenContract}&data=${data}`; }
       const weiAmount = BigInt(Math.round(parseFloat(amount) * 1e18));
       return `trust://send?asset=c${chainId}&to=${to}&amount=${weiAmount.toString()}`;
-    },
-  },
-  {
-    id: 'rainbow',
-    name: 'Rainbow',
-    icon: '🌈',
-    color: 'bg-purple-500',
-    getDeepLink: ({ pageUrl }) => {
-      return `rainbow://dapp?url=${encodeURIComponent(pageUrl)}`;
-    },
-  },
+    } },
+  { id: 'rainbow', name: 'Rainbow', icon: '🌈', color: '#001E59',
+    getDeepLink: ({ pageUrl }) => `rainbow://dapp?url=${encodeURIComponent(pageUrl)}` },
 ];
+
+function Spinner({ className = 'h-5 w-5' }: { className?: string }) {
+  return (
+    <svg className={`animate-spin ${className}`} viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  );
+}
+
+interface EthereumProvider {
+  request(args: { method: string; params?: unknown[] }): Promise<unknown>;
+}
 
 export default function PublicPaymentPage() {
   const params = useParams();
@@ -101,7 +77,7 @@ export default function PublicPaymentPage() {
   const [timeLeft, setTimeLeft] = useState('');
   const [walletStatus, setWalletStatus] = useState<'idle' | 'connecting' | 'sending' | 'sent' | 'error'>('idle');
   const [walletError, setWalletError] = useState('');
-  const [showManual, setShowManual] = useState(false);
+  const [showQr, setShowQr] = useState(false);
 
   const { status: liveStatus, txHash } = usePaymentStatus(paymentId);
 
@@ -122,16 +98,16 @@ export default function PublicPaymentPage() {
 
   useEffect(() => {
     if (!payment?.expiresAt) return;
-    function updateTimer() {
+    function tick() {
       const diff = new Date(payment!.expiresAt).getTime() - Date.now();
       if (diff <= 0) { setTimeLeft('Expired'); return; }
       const m = Math.floor(diff / 60000);
       const s = Math.floor((diff % 60000) / 1000);
       setTimeLeft(`${m}:${s.toString().padStart(2, '0')}`);
     }
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-    return () => clearInterval(interval);
+    tick();
+    const iv = setInterval(tick, 1000);
+    return () => clearInterval(iv);
   }, [payment?.expiresAt]);
 
   async function handleCopy() {
@@ -144,54 +120,36 @@ export default function PublicPaymentPage() {
   async function handleInjectedWalletPay() {
     if (!payment?.address) return;
     const ethereum = (window as unknown as { ethereum?: EthereumProvider }).ethereum;
-    if (!ethereum) {
-      setWalletError('No wallet detected. Install MetaMask or Rabby.');
-      return;
-    }
+    if (!ethereum) { setWalletError('No wallet detected.'); return; }
 
     setWalletStatus('connecting');
     setWalletError('');
-
     try {
-      const accounts: string[] = await ethereum.request({ method: 'eth_requestAccounts' }) as string[];
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' }) as string[];
       if (!accounts?.length) throw new Error('No account selected');
       const from = accounts[0];
       const chainId = CHAIN_ID_MAP[payment.chain.id];
-
       if (chainId) {
-        const currentChainId = await ethereum.request({ method: 'eth_chainId' }) as string;
+        const currentHex = await ethereum.request({ method: 'eth_chainId' }) as string;
         const targetHex = '0x' + chainId.toString(16);
-        if (currentChainId !== targetHex) {
-          try {
-            await ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: targetHex }] });
-          } catch {
-            setWalletError(`Please switch to ${payment.chain.name} in your wallet.`);
-            setWalletStatus('idle');
-            return;
-          }
+        if (currentHex !== targetHex) {
+          try { await ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: targetHex }] }); }
+          catch { setWalletError(`Please switch to ${payment.chain.name}.`); setWalletStatus('idle'); return; }
         }
       }
-
       setWalletStatus('sending');
       const tokenContract = payment.token.contractAddress;
       const decimals = payment.token.decimals;
       const amountFloat = parseFloat(payment.amountExpected);
-
       if (tokenContract && tokenContract !== '') {
         const amountBig = BigInt(Math.round(amountFloat * (10 ** decimals)));
         const amountHex = '0x' + amountBig.toString(16).padStart(64, '0');
         const toHex = payment.address.toLowerCase().replace('0x', '').padStart(64, '0');
         const data = '0xa9059cbb' + toHex + amountHex;
-        await ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [{ from, to: tokenContract, data, value: '0x0' }],
-        });
+        await ethereum.request({ method: 'eth_sendTransaction', params: [{ from, to: tokenContract, data, value: '0x0' }] });
       } else {
         const amountWei = BigInt(Math.round(amountFloat * 1e18));
-        await ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [{ from, to: payment.address, value: '0x' + amountWei.toString(16) }],
-        });
+        await ethereum.request({ method: 'eth_sendTransaction', params: [{ from, to: payment.address, value: '0x' + amountWei.toString(16) }] });
       }
       setWalletStatus('sent');
     } catch (err: unknown) {
@@ -206,21 +164,12 @@ export default function PublicPaymentPage() {
     const chainId = CHAIN_ID_MAP[payment.chain.id] || 1;
     const wallet = WALLETS.find(w => w.id === walletId);
     if (!wallet) return;
-
     const link = wallet.getDeepLink({
-      chainId,
-      to: payment.address,
-      tokenContract: payment.token.contractAddress,
-      amount: payment.amountExpected,
-      decimals: payment.token.decimals,
-      pageUrl: window.location.href,
+      chainId, to: payment.address, tokenContract: payment.token.contractAddress,
+      amount: payment.amountExpected, decimals: payment.token.decimals, pageUrl: window.location.href,
     });
-
-    if (link) {
-      window.location.href = link;
-    } else {
-      handleInjectedWalletPay();
-    }
+    if (link) window.location.href = link;
+    else handleInjectedWalletPay();
   }
 
   const currentStatus = liveStatus || payment?.status || 'PENDING';
@@ -232,198 +181,228 @@ export default function PublicPaymentPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="text-sm text-gray-500">Loading payment...</div>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <Spinner className="h-8 w-8 text-indigo-500" />
       </div>
     );
   }
 
   if (error || !payment) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 text-center">
-          <h1 className="text-lg font-semibold text-gray-900 mb-1">Payment Not Found</h1>
-          <p className="text-sm text-gray-500">{error || 'This payment does not exist.'}</p>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 px-4">
+        <div className="w-full max-w-sm rounded-2xl bg-white p-8 text-center shadow-lg shadow-slate-200/50">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+            <svg className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <h1 className="text-lg font-semibold text-gray-900">Payment Not Found</h1>
+          <p className="mt-1 text-sm text-gray-500">{error || 'This payment does not exist.'}</p>
         </div>
       </div>
     );
   }
 
-  // QR encodes this page's URL so scanning opens the wallet selection page
-  const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
-
   return (
-    <div className="flex min-h-screen flex-col items-center bg-gray-50 px-4 py-8">
-      {/* Branding */}
-      <div className="mb-6 flex items-center gap-2">
-        <div className="h-8 w-8 rounded-lg bg-indigo-500 flex items-center justify-center">
-          <span className="text-sm font-bold text-white">B</span>
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* Header */}
+      <header className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+        <div className="mx-auto flex max-w-lg items-center px-5 py-3.5 gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500">
+            <span className="text-xs font-bold text-white">B</span>
+          </div>
+          <span className="text-sm font-semibold text-gray-900">Banksi</span>
+          <span className="text-slate-300">|</span>
+          <span className="text-sm text-gray-600">{payment.merchant.name}</span>
         </div>
-        <span className="text-lg font-semibold text-gray-900">Banksi</span>
-      </div>
+      </header>
 
-      <div className="w-full max-w-sm space-y-4">
-        {/* Amount Card */}
-        <div className="rounded-xl border border-gray-200 bg-white p-5 text-center">
-          <p className="text-sm text-gray-500 mb-1">Pay {payment.merchant.name}</p>
-          {payment.product && (
-            <p className="text-xs text-gray-400 mb-2">{payment.product.name}</p>
-          )}
-          <p className="text-3xl font-bold text-gray-900">
-            {payment.amountExpected} {payment.token.symbol}
-          </p>
-          <p className="text-sm text-gray-500 mt-1">
-            ${Number(payment.fiatAmount || 0).toFixed(2)} {payment.currency} on {payment.chain.name}
-          </p>
-        </div>
+      <main className="flex-1 px-4 py-6">
+        <div className="mx-auto max-w-lg space-y-5">
 
-        {/* Success */}
-        {(isSuccess || walletStatus === 'sent') && (
-          <div className="rounded-xl border border-green-200 bg-green-50 p-6 text-center space-y-3">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
-              <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h2 className="text-lg font-semibold text-green-700">
-              {walletStatus === 'sent' ? 'Transaction Sent' : currentStatus === 'CONFIRMING' ? 'Payment Detected' : 'Payment Confirmed'}
-            </h2>
-            <p className="text-sm text-gray-500">
-              {walletStatus === 'sent' ? 'Waiting for blockchain confirmation...'
-                : currentStatus === 'CONFIRMING' ? 'Confirming on the blockchain...'
-                : 'Payment confirmed. Thank you!'}
-            </p>
-            {txHash && <p className="text-xs text-gray-400 font-mono break-all">TX: {txHash}</p>}
-          </div>
-        )}
-
-        {isExpired && (
-          <div className="rounded-xl border border-gray-200 bg-gray-50 p-6 text-center">
-            <h2 className="text-lg font-semibold text-gray-700">Payment Expired</h2>
-            <p className="text-sm text-gray-500 mt-1">Please request a new payment.</p>
-          </div>
-        )}
-
-        {isFailed && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
-            <h2 className="text-lg font-semibold text-red-700">Payment Failed</h2>
-            <p className="text-sm text-gray-500 mt-1">Please contact the merchant.</p>
-          </div>
-        )}
-
-        {/* Active Payment */}
-        {currentStatus === 'PENDING' && walletStatus !== 'sent' && (
-          <>
-            {/* Wallet Selection */}
-            {isEvmChain && (
-              <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-3">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide text-center">
-                  Choose Wallet
-                </p>
-
-                {/* Injected wallet (desktop) */}
-                {hasInjectedWallet && (
-                  <button
-                    onClick={handleInjectedWalletPay}
-                    disabled={walletStatus === 'connecting' || walletStatus === 'sending'}
-                    className="w-full flex items-center gap-3 rounded-lg border-2 border-indigo-500 bg-indigo-50 px-4 py-3 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 transition-colors"
-                  >
-                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500 text-white text-lg">
-                      🌐
-                    </span>
-                    <div className="text-left flex-1">
-                      <div className="font-semibold">Browser Wallet</div>
-                      <div className="text-xs font-normal text-gray-500">MetaMask, Rabby, Coinbase, etc.</div>
-                    </div>
-                    {(walletStatus === 'connecting' || walletStatus === 'sending') && (
-                      <svg className="animate-spin h-5 w-5 text-indigo-500" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                    )}
-                  </button>
-                )}
-
-                {/* Mobile wallet buttons */}
-                <div className="grid grid-cols-2 gap-2">
-                  {WALLETS.map((wallet) => (
-                    <button
-                      key={wallet.id}
-                      onClick={() => handleMobileWalletOpen(wallet.id)}
-                      className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-3 text-sm font-medium text-gray-900 hover:bg-gray-50 transition-colors"
-                    >
-                      <span className={`flex h-8 w-8 items-center justify-center rounded-lg ${wallet.color} text-white text-base`}>
-                        {wallet.icon}
-                      </span>
-                      <span className="text-xs">{wallet.name}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {walletError && (
-                  <p className="text-xs text-red-600 text-center">{walletError}</p>
-                )}
-              </div>
+          {/* Amount card */}
+          <div className="rounded-2xl bg-white p-6 shadow-sm shadow-slate-200/50 text-center space-y-1">
+            {payment.product && (
+              <p className="text-xs font-medium text-gray-400 mb-2">{payment.product.name}</p>
             )}
+            <p className="inline-flex items-center justify-center gap-2 text-3xl font-bold text-gray-900">
+              <TokenIcon symbol={payment.token.symbol} size={28} />
+              {payment.amountExpected} {payment.token.symbol}
+            </p>
+            <p className="inline-flex items-center justify-center gap-1.5 text-sm text-gray-500">
+              ${Number(payment.fiatAmount || 0).toFixed(2)} {payment.currency} on
+              <ChainIcon chainId={payment.chain.id} size={16} />
+              {payment.chain.name}
+            </p>
+          </div>
 
-            {/* Manual transfer toggle */}
-            <button
-              onClick={() => setShowManual(!showManual)}
-              className="w-full text-center text-sm text-indigo-600 hover:text-indigo-500 font-medium py-2"
-            >
-              {showManual ? 'Hide manual transfer' : 'Send manually instead'}
-            </button>
+          {/* Success */}
+          {(isSuccess || walletStatus === 'sent') && (
+            <div className="rounded-2xl bg-gradient-to-b from-emerald-50 to-white border border-emerald-200 p-6 text-center space-y-3">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+                <svg className="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h2 className="text-lg font-semibold text-emerald-700">
+                {walletStatus === 'sent' ? 'Transaction Sent' : currentStatus === 'CONFIRMING' ? 'Payment Detected' : 'Payment Confirmed!'}
+              </h2>
+              <p className="text-sm text-gray-500">
+                {walletStatus === 'sent' ? 'Waiting for blockchain confirmation...'
+                  : currentStatus === 'CONFIRMING' ? 'Confirming on the blockchain...'
+                  : 'Thank you for your purchase!'}
+              </p>
+              {txHash && (
+                <p className="text-xs text-gray-400 font-mono break-all bg-slate-50 rounded-lg px-3 py-2">TX: {txHash}</p>
+              )}
+            </div>
+          )}
 
-            {showManual && (
-              <>
-                {/* QR Code - encodes this page URL */}
-                <div className="rounded-xl border border-gray-200 bg-white p-5 flex flex-col items-center">
-                  <div className="rounded-xl bg-white p-3">
-                    <QRCodeSVG value={pageUrl || `${payment.address}`} size={180} level="M" bgColor="#ffffff" fgColor="#0f172a" />
-                  </div>
-                  <p className="mt-2 text-xs text-gray-400">Scan to open payment page</p>
+          {/* Expired */}
+          {isExpired && (
+            <div className="rounded-2xl bg-slate-50 border border-slate-200 p-6 text-center space-y-2">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-200">
+                <svg className="h-8 w-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h2 className="text-lg font-semibold text-gray-700">Payment Expired</h2>
+              <p className="text-sm text-gray-500">This payment has timed out. Please request a new payment.</p>
+            </div>
+          )}
+
+          {/* Failed */}
+          {isFailed && (
+            <div className="rounded-2xl bg-red-50 border border-red-200 p-6 text-center space-y-2">
+              <h2 className="text-lg font-semibold text-red-700">Payment Failed</h2>
+              <p className="text-sm text-gray-500">Please contact the merchant.</p>
+            </div>
+          )}
+
+          {/* Active payment */}
+          {currentStatus === 'PENDING' && walletStatus !== 'sent' && (
+            <>
+              {/* Timer */}
+              <div className="flex items-center justify-between rounded-xl bg-white px-4 py-3 shadow-sm shadow-slate-100">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500" />
+                  </span>
+                  <span className="text-sm text-gray-500">Waiting for payment</span>
                 </div>
+                <span className="text-sm font-mono font-semibold text-gray-900 tabular-nums">{timeLeft}</span>
+              </div>
 
-                {/* Address */}
+              {/* Wallet buttons (EVM) */}
+              {isEvmChain && (
+                <div className="space-y-2">
+                  {hasInjectedWallet && (
+                    <button
+                      onClick={handleInjectedWalletPay}
+                      disabled={walletStatus === 'connecting' || walletStatus === 'sending'}
+                      className="w-full flex items-center justify-center gap-2.5 rounded-xl bg-indigo-500 py-3.5 text-sm font-semibold text-white transition-all hover:bg-indigo-600 disabled:opacity-60 shadow-lg shadow-indigo-200"
+                    >
+                      {(walletStatus === 'connecting' || walletStatus === 'sending') ? (
+                        <><Spinner className="h-4 w-4 text-white/80" /> Connecting...</>
+                      ) : (
+                        <>
+                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          Pay with Browser Wallet
+                        </>
+                      )}
+                    </button>
+                  )}
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {WALLETS.map((wallet) => (
+                      <button
+                        key={wallet.id}
+                        onClick={() => handleMobileWalletOpen(wallet.id)}
+                        className="flex flex-col items-center gap-1 rounded-xl bg-white px-2 py-2.5 shadow-sm shadow-slate-100 hover:shadow-md transition-shadow"
+                      >
+                        <span className="flex h-9 w-9 items-center justify-center rounded-xl text-white text-base" style={{ backgroundColor: wallet.color }}>
+                          {wallet.icon}
+                        </span>
+                        <span className="text-[10px] font-medium text-gray-500">{wallet.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                  {walletError && <p className="text-xs text-red-500 text-center">{walletError}</p>}
+                  <div className="relative py-2">
+                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
+                    <div className="relative flex justify-center">
+                      <span className="bg-gradient-to-br from-slate-50 to-slate-100 px-3 text-xs text-gray-400">or send manually</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* QR + Address */}
+              <div className="rounded-2xl bg-white p-5 shadow-sm shadow-slate-100 space-y-4">
+                <div className="flex items-center justify-center">
+                  <button
+                    onClick={() => setShowQr(!showQr)}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    <svg className={`h-4 w-4 transition-transform ${showQr ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                    {showQr ? 'Hide QR Code' : 'Show QR Code'}
+                  </button>
+                </div>
+                {showQr && (
+                  <div className="flex justify-center py-2">
+                    <div className="rounded-2xl border border-slate-100 bg-white p-4">
+                      <QRCodeSVG
+                        value={typeof window !== 'undefined' ? window.location.href : (payment.address || '')}
+                        size={160} level="M" bgColor="#ffffff" fgColor="#0f172a"
+                      />
+                    </div>
+                  </div>
+                )}
+                <div className="text-center">
+                  <p className="text-xs font-medium uppercase tracking-wider text-gray-400">Send exactly</p>
+                  <p className="mt-1 inline-flex items-center gap-1.5 text-lg font-bold text-gray-900">
+                    <TokenIcon symbol={payment.token.symbol} size={20} />
+                    {payment.amountExpected} {payment.token.symbol}
+                  </p>
+                </div>
                 {payment.address && (
-                  <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-2">
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                      Send {payment.amountExpected} {payment.token.symbol} to
-                    </p>
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium uppercase tracking-wider text-gray-400 text-center">To this address</p>
                     <button
                       onClick={handleCopy}
-                      className="w-full text-left rounded-lg bg-gray-50 px-3 py-2.5 font-mono text-xs text-gray-900 break-all hover:bg-gray-100 transition-colors"
+                      className="group w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-center font-mono text-xs text-gray-800 break-all hover:bg-slate-100 transition-colors relative"
                     >
                       {payment.address}
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {copied ? (
+                          <svg className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        ) : (
+                          <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                        )}
+                      </span>
                     </button>
-                    <p className="text-xs text-center text-gray-400">
-                      {copied ? <span className="text-green-600 font-medium">Copied!</span> : 'Tap to copy'}
+                    <p className="text-center text-[11px] text-gray-400">
+                      {copied ? <span className="text-emerald-600 font-medium">Copied!</span> : 'Tap to copy address'}
                     </p>
                   </div>
                 )}
-              </>
-            )}
-
-            {/* Timer */}
-            <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-amber-400" />
-                </span>
-                <span className="text-sm text-gray-500">Waiting for payment</span>
               </div>
-              <div className="text-sm font-mono font-medium text-gray-900">{timeLeft}</div>
-            </div>
-          </>
-        )}
-      </div>
+            </>
+          )}
+        </div>
+      </main>
 
-      <p className="mt-8 text-xs text-gray-400">Powered by Banksi</p>
+      <footer className="py-5 text-center">
+        <p className="text-xs text-gray-400">Powered by <span className="font-semibold text-gray-500">Banksi</span></p>
+      </footer>
     </div>
   );
-}
-
-interface EthereumProvider {
-  request(args: { method: string; params?: unknown[] }): Promise<unknown>;
 }

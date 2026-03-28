@@ -1,7 +1,10 @@
 import { prisma } from '@/lib/prisma';
 import { getChainAdapter } from '@/lib/chains/registry';
 
-const REQUIRED_CONFIRMATIONS = parseInt(process.env.REQUIRED_CONFIRMATIONS || '3');
+async function getRequiredConfirmations(): Promise<number> {
+  const setting = await prisma.systemSetting.findUnique({ where: { key: 'required_confirmations' } });
+  return setting ? parseInt(setting.value) : parseInt(process.env.REQUIRED_CONFIRMATIONS || '3');
+}
 
 /**
  * Monitor all PENDING payments that haven't expired.
@@ -19,6 +22,7 @@ export async function monitorPendingPayments(): Promise<{
 }> {
   const stats = { checked: 0, confirmed: 0, expired: 0, errors: [] as string[] };
   const now = new Date();
+  const REQUIRED_CONFIRMATIONS = await getRequiredConfirmations();
 
   // 1. Mark expired payments
   const expiredResult = await prisma.payment.updateMany({
@@ -114,6 +118,8 @@ export async function checkPaymentStatus(paymentId: string): Promise<{
   amountReceived: string | null;
   confirmations: number;
 }> {
+  const REQUIRED_CONFIRMATIONS = await getRequiredConfirmations();
+
   const payment = await prisma.payment.findUnique({
     where: { id: paymentId },
     include: {

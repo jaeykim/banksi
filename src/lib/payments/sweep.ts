@@ -14,8 +14,12 @@ export interface SweepResult {
   fromAddress: string;
   toAddress: string;
   amount: string;
+  merchantAmount: string;
+  feeAmount: string | null;
+  feePercent: number | null;
   chainId: string;
   txHash: string | null;
+  feeTxHash: string | null;
   status: 'SUBMITTED' | 'FAILED';
   error?: string;
 }
@@ -24,11 +28,20 @@ export interface SweepResult {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function resolveChainType(chainId: string, isEvm: boolean): ChainType {
-  if (chainId.startsWith('evm:')) return 'evm';
-  if (chainId.startsWith('tron:')) return 'tron';
-  if (chainId.startsWith('solana:')) return 'solana';
-  return isEvm ? 'evm' : 'solana';
+function resolveChainType(chainId: string, isEvm: boolean, chainName?: string): ChainType {
+  if (isEvm) return 'evm';
+  if (chainId === 'tron' || chainId.startsWith('tron:') || chainName?.toLowerCase().includes('tron')) return 'tron';
+  return 'solana';
+}
+
+async function getSweepFeePercent(): Promise<number> {
+  const setting = await prisma.systemSetting.findUnique({ where: { key: 'sweep_fee_percent' } });
+  return setting ? parseFloat(setting.value) : 0;
+}
+
+async function getSweepFeeAddress(): Promise<string | null> {
+  const setting = await prisma.systemSetting.findUnique({ where: { key: 'sweep_fee_address' } });
+  return setting?.value || null;
 }
 
 // ---------------------------------------------------------------------------
@@ -99,7 +112,7 @@ export async function sweepPayment(paymentId: string): Promise<SweepResult> {
   );
 
   // 4. Derive private key
-  const chainType = resolveChainType(payment.chainId, payment.chain.isEvm);
+  const chainType = resolveChainType(payment.chainId, payment.chain.isEvm, payment.chain.name);
   const { privateKey, address: derivedAddress } = derivePrivateKey(
     mnemonic,
     chainType,
@@ -128,10 +141,29 @@ export async function sweepPayment(paymentId: string): Promise<SweepResult> {
     );
   }
 
-  // Use the actual balance (or amountReceived if lower) for the sweep
+  // Use the actual balance for the sweep
   const sweepAmount = balance;
 
-  // Create a PENDING sweep job
+  // 6. Calculate fee split upfront
+  const feePercent = await getSweepFeePercent();
+  const feeAddress = await getSweepFeeAddress();
+  const decimals = payment.token.decimals;
+
+  let merchantAmount = sweepAmount;
+  let feeAmount = '0';
+
+  if (feePercent > 0 && feeAddress) {
+    const totalRaw = BigInt(Math.round(parseFloat(sweepAmount) * (10 ** decimals)));
+    const feeRaw = totalRaw * BigInt(Math.round(feePercent * 100)) / BigInt(10000);
+    const merchantRaw = totalRaw - feeRaw;
+
+    if (feeRaw > BigInt(0)) {
+      feeAmount = (Number(feeRaw) / (10 ** decimals)).toString();
+      merchantAmount = (Number(merchantRaw) / (10 ** decimals)).toString();
+    }
+  }
+
+  // Create sweep job with fee info
   const sweepJob = await prisma.sweepJob.create({
     data: {
       merchantId: payment.merchantId,
@@ -139,12 +171,16 @@ export async function sweepPayment(paymentId: string): Promise<SweepResult> {
       fromAddress: derivedAddr.address,
       toAddress,
       amount: sweepAmount,
+      merchantAmount,
+      feeAmount: feeAmount !== '0' ? feeAmount : null,
+      feePercent: feePercent > 0 ? feePercent : null,
+      feeAddress: feeAmount !== '0' ? feeAddress : null,
       status: 'PENDING',
     },
   });
 
   try {
-    // 6. Gas funding: send native token from funder wallet to cover gas
+    // 7. Gas funding: send native token from funder wallet to cover gas
     const gasFunderKey = process.env.GAS_FUNDER_PRIVATE_KEY;
     if (!gasFunderKey) {
       throw new Error('GAS_FUNDER_PRIVATE_KEY is not configured');
@@ -157,34 +193,59 @@ export async function sweepPayment(paymentId: string): Promise<SweepResult> {
       sweepAmount,
     );
 
-    // Send gas funding (add 20% buffer)
+    // Send gas funding — add extra buffer if we need 2 txs (merchant + fee)
     const gasBI = BigInt(estimatedGas);
-    const gasWithBuffer = gasBI + gasBI / BigInt(5);
+    const multiplier = feeAmount !== '0' ? BigInt(3) : BigInt(1); // 3x for 2 transfers + margin
+    const gasWithBuffer = gasBI * multiplier;
     await adapter.sendNative(
       gasFunderKey,
       derivedAddr.address,
       gasWithBuffer.toString(),
     );
 
-    // Mark derived address as funded
     await prisma.derivedAddress.update({
       where: { id: derivedAddr.id },
       data: { isFunded: true },
     });
 
-    // 7. Sweep tokens from derived address to merchant wallet
+    // 8. Sweep to merchant first (critical path)
     const txHash = await adapter.sweep(
       privateKey,
       toAddress,
       payment.token.contractAddress,
-      sweepAmount,
+      merchantAmount,
     );
 
-    // 8. Update records on success
+    // 9. Fee transfer (best-effort — merchant already got paid)
+    let feeTxHash: string | null = null;
+    let feeError: string | null = null;
+
+    if (feeAmount !== '0' && feeAddress) {
+      try {
+        feeTxHash = await adapter.sweep(
+          privateKey,
+          feeAddress,
+          payment.token.contractAddress,
+          feeAmount,
+        );
+      } catch (err) {
+        feeError = err instanceof Error ? err.message : 'Fee transfer failed';
+        console.error(`[sweep] Fee transfer failed for payment ${payment.id}: ${feeError}`);
+      }
+    }
+
+    // 10. Update records
+    const errorNote = feeError ? `Fee transfer failed: ${feeError}` : null;
+
     await prisma.$transaction([
       prisma.sweepJob.update({
         where: { id: sweepJob.id },
-        data: { status: 'SUBMITTED', txHash },
+        data: {
+          status: 'SUBMITTED',
+          txHash,
+          feeTxHash,
+          errorMessage: errorNote,
+        },
       }),
       prisma.derivedAddress.update({
         where: { id: derivedAddr.id },
@@ -202,8 +263,12 @@ export async function sweepPayment(paymentId: string): Promise<SweepResult> {
       fromAddress: derivedAddr.address,
       toAddress,
       amount: sweepAmount,
+      merchantAmount,
+      feeAmount: feeAmount !== '0' ? feeAmount : null,
+      feePercent: feePercent > 0 ? feePercent : null,
       chainId: payment.chainId,
       txHash,
+      feeTxHash,
       status: 'SUBMITTED',
     };
   } catch (err) {
@@ -222,8 +287,12 @@ export async function sweepPayment(paymentId: string): Promise<SweepResult> {
       fromAddress: derivedAddr.address,
       toAddress,
       amount: sweepAmount,
+      merchantAmount,
+      feeAmount: feeAmount !== '0' ? feeAmount : null,
+      feePercent: feePercent > 0 ? feePercent : null,
       chainId: payment.chainId,
       txHash: null,
+      feeTxHash: null,
       status: 'FAILED',
       error: errorMessage,
     };
@@ -261,8 +330,12 @@ export async function sweepMerchantFunds(
         fromAddress: '',
         toAddress: '',
         amount: '0',
+        merchantAmount: '0',
+        feeAmount: null,
+        feePercent: null,
         chainId: '',
         txHash: null,
+        feeTxHash: null,
         status: 'FAILED',
         error: err instanceof Error ? err.message : 'Unknown error',
       });
@@ -313,8 +386,12 @@ export async function sweepAllConfirmed(): Promise<{
         fromAddress: '',
         toAddress: '',
         amount: '0',
+        merchantAmount: '0',
+        feeAmount: null,
+        feePercent: null,
         chainId: '',
         txHash: null,
+        feeTxHash: null,
         status: 'FAILED',
         error: err instanceof Error ? err.message : 'Unknown error',
       });

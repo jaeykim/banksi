@@ -1,0 +1,133 @@
+{
+  "header": {
+    "signIn": "登录",
+    "docs": "文档"
+  },
+  "hero": {
+    "badge": "氛围编程者的支付模块",
+    "title": "一句提示词",
+    "titleHighlight": "接入加密支付",
+    "description": "你在用 AI 开发，你需要支付功能。只需告诉你的 AI 代理「接入 Banksi」——它会读取 MCP 工具、安装 SDK、配置 x402 付费墙。5 条链上的 USDT & USDC，零配置。"
+  },
+  "getStarted": "npm install banksi",
+  "quickstart": {
+    "heading": "跟 AI 说一句就行。",
+    "terminal": {
+      "step1": "正在安装 banksi SDK...",
+      "step2": "正在为 /api/checkout 创建付费墙中间件",
+      "step3": "正在将 BanksiPayButton 添加到 checkout.tsx",
+      "step4": "正在配置 Arbitrum + USDT/USDC",
+      "done": "搞定。加密支付已上线。",
+      "promptLine1": "给我的咖啡店应用接入 Banksi 加密支付。",
+      "promptLine2": "用 Arbitrum 链，接受 USDT 和 USDC。"
+    }
+  },
+  "features": {
+    "heading": "为什么选择 Banksi？",
+    "subheading": "为 AI 构建的应用添加加密支付，最简单的方式。",
+    "multiChain": "5 条链，1 个 SDK",
+    "multiChainDesc": "Ethereum、BSC、Arbitrum、Tron、Solana——开箱即用。HD 钱包为每笔支付生成唯一地址。",
+    "secure": "一行付费墙",
+    "secureDesc": "createBanksiPaywall({ amount: 0.10 })——这就是全部集成代码。API 返回 402，客户端链上支付，附带凭证重试。",
+    "monitoring": "AI 原生",
+    "monitoringDesc": "内置 MCP 服务器。你的 AI 代理可以阅读 SDK 文档、生成集成代码并测试——无需你写一行代码。",
+    "x402": "x402 协议",
+    "x402Desc": "HTTP 402 Payment Required，为加密货币重新设计。任何端点都能变成按次付费。AI 代理自主完成整个流程。"
+  },
+  "howItWorks": {
+    "heading": "工作原理",
+    "subheading": "从提示词到支付，4 步搞定。",
+    "step1Title": "告诉你的 AI",
+    "step1Desc": "「用 Banksi 添加加密支付。」你的 AI 代理通过 MCP 调用 get_integration_guide。",
+    "step2Title": "代理安装 SDK",
+    "step2Desc": "npm install banksi——代理生成中间件代码并接入你的路由。",
+    "step3Title": "API 返回 402",
+    "step3Desc": "未付费请求收到机器可读的 402 响应，包含链、代币、金额和收款地址。",
+    "step4Title": "用户链上支付",
+    "step4Desc": "向地址发送 USDT/USDC。附带 X-Payment 头重试请求，即刻获得访问权限。"
+  },
+  "pricing": {
+    "heading": "简单定价",
+    "subheading": "无月费。无设置费。仅对成功的支付收取少量手续费。",
+    "fee": "1%",
+    "feeLabel": "每笔交易",
+    "feeDesc": "仅在支付成功时收取，归集资金时自动扣除。",
+    "item1": "无月度订阅",
+    "item2": "无设置和集成费用",
+    "item3": "测试网免费使用",
+    "item4": "自托管方案：0% 手续费"
+  },
+  "forBanks": {
+    "title": "面向 API 开发者",
+    "item1": "一个中间件函数即可为任何端点添加付费墙",
+    "item2": "x402 协议返回机器可读的支付指令",
+    "item3": "AI 代理可通过 MCP 自主为你的 API 付费",
+    "item4": "按路由灵活定价——从微支付到订阅"
+  },
+  "forMerchants": {
+    "title": "面向应用开发者",
+    "item1": "即插即用的 BanksiPayButton React 组件",
+    "item2": "内置网络和代币选择 UI",
+    "item3": "实时支付轮询与确认回调",
+    "item4": "兼容任何 Banksi 实例——自托管或云端"
+  },
+  "paymentPreview": {
+    "heading": "用户看到的界面",
+    "subheading": "简洁、移动友好的支付流程。选择网络，选择代币，支付——完成。",
+    "selectNetwork": "选择网络",
+    "payWith": "支付方式",
+    "youWillPay": "支付金额",
+    "on": "",
+    "waitingForPayment": "等待支付",
+    "sendExactly": "精确发送",
+    "toAddress": "收款地址",
+    "tapToCopy": "点击复制地址"
+  },
+  "x402": {
+    "heading": "x402：可编程支付",
+    "subheading": "HTTP 402 Payment Required——为加密货币重新设计。一个中间件即可将任何 API 变为按次付费。",
+    "item1Title": "402 Payment Required",
+    "item1Desc": "受保护的端点返回机器可读的 402 响应，包含链、代币、金额和收款地址等支付指令。",
+    "item2Title": "链上支付",
+    "item2Desc": "客户端向唯一地址发送稳定币。无需账户，无需 API 密钥——只需一笔区块链交易。",
+    "item3Title": "授权访问",
+    "item3Desc": "携带支付凭证重新发送请求。服务器链上验证后返回内容。",
+    "badge1": "API 变现",
+    "badge2": "AI 代理支付",
+    "badge3": "微支付"
+  },
+  "mcp": {
+    "heading": "你的 AI 代理了解 Banksi",
+    "subheading": "MCP 服务器为你的 AI 代理提供一切——SDK 文档、代码生成、集成测试。只需说「添加支付」，其余交给它。",
+    "tool1": "get_integration_guide",
+    "tool1Desc": "Next.js / Express / React 完整配置指南",
+    "tool2": "generate_paywall_code",
+    "tool2Desc": "可直接粘贴到路由的中间件代码",
+    "tool3": "get_sdk_reference",
+    "tool3Desc": "用于自主编码的完整 SDK API 文档",
+    "tool4": "validate_integration",
+    "tool4Desc": "测试 Banksi 是否可达且配置正确",
+    "docsLink": "查看 MCP 文档"
+  },
+  "cta": {
+    "heading": "下一句提示词，接入支付。",
+    "subheading": "安装 SDK，让你的 AI 代理搞定剩下的。5 条链上的 USDT & USDC，无需智能合约。",
+    "demo": "试用演示商店",
+    "docs": "查看文档",
+    "example": "查看咖啡店示例"
+  },
+  "testimonials": {
+    "heading": "开发者出货更快",
+    "subheading": "氛围编程者们怎么说。",
+    "t1": "我让 Claude Code 添加支付功能。它调用了 MCP 服务器、安装了 SDK、3 分钟内配好了 x402。我一行代码都没写。",
+    "t1Name": "James Park",
+    "t1Role": "独立开发者，用 AI 构建产品",
+    "t2": "我们的 API 需要微支付功能。Banksi 的 x402 中间件真的只有一行。我们的 AI 客户现在自主付费了。",
+    "t2Name": "Sophia Chen",
+    "t2Role": "创始人，DataPipe AI",
+    "t3": "MCP 集成工具太强了。我的 Cursor 代理读取 SDK 参考文档，每次都能生成完美的付费墙代码。",
+    "t3Name": "Marcus Rivera",
+    "t3Role": "全栈开发者，氛围编程爱好者"
+  },
+  "footer": "氛围编程者的支付模块。"
+}
