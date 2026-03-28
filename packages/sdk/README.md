@@ -77,8 +77,26 @@ AI agents can integrate Banksi using the MCP server:
 }
 ```
 
+## Using with AI (Claude Code, Cursor, etc.)
+
+Just tell your AI agent:
+
+```
+npm install banksi 하고 https://banksi.vercel.app/api/docs 문서를 읽고 크립토 결제를 붙여줘
+```
+
+Or in English:
+
+```
+Install banksi and read https://banksi.vercel.app/api/docs to add crypto payments
+```
+
+The AI agent will read the plain-text docs and generate the integration code.
+
 ## Links
 
 - [Docs](https://banksi.vercel.app/docs)
+- [Docs (plain text for AI)](https://banksi.vercel.app/api/docs)
 - [Dashboard](https://banksi.vercel.app/merchant)
 - [Demo](https://banksi.vercel.app/examples/cafe)
+- [Register](https://banksi.vercel.app/register)

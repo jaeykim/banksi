@@ -1,0 +1,35 @@
+# Banksi — Crypto Payment Module
+
+> Add USDT/USDC payments to any app. Built for vibe coders.
+
+## Docs
+
+- [Full SDK Documentation](https://banksi.vercel.app/api/docs): Complete integration guide with code examples for Next.js, Express, and React
+- [API Reference](https://banksi.vercel.app/docs): Interactive documentation page
+
+## Quick Integration
+
+```bash
+npm install banksi
+```
+
+```typescript
+// Next.js paywall (1 line)
+import { createBanksiPaywall } from 'banksi/next';
+const paywall = createBanksiPaywall({ amount: 0.10 });
+
+// React pay button
+import { BanksiPayButton } from 'banksi/react';
+<BanksiPayButton amount={4.50} onPaymentConfirmed={(id) => {}} />
+```
+
+Environment: `BANKSI_API_KEY=bks_xxx` (get from https://banksi.vercel.app/register)
+
+## Links
+
+- Homepage: https://banksi.vercel.app
+- npm: https://www.npmjs.com/package/banksi
+- Docs (plain text): https://banksi.vercel.app/api/docs
+- Register: https://banksi.vercel.app/register
+- Dashboard: https://banksi.vercel.app/merchant
+- Demo: https://banksi.vercel.app/examples/cafe
