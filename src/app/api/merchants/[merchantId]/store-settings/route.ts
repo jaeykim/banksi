@@ -61,13 +61,26 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     }
 
     const body = await request.json();
-    const { storeDescription, storeLogo, storeBannerColor, storeIsPublic } = body;
+    const { storeDescription, storeLogo, storeBannerColor, storeIsPublic, slug } = body;
 
     const data: Record<string, unknown> = {};
     if (typeof storeDescription === 'string') data.storeDescription = storeDescription;
     if (typeof storeLogo === 'string') data.storeLogo = storeLogo;
     if (typeof storeBannerColor === 'string') data.storeBannerColor = storeBannerColor;
     if (typeof storeIsPublic === 'boolean') data.storeIsPublic = storeIsPublic;
+
+    // Slug update with uniqueness check
+    if (typeof slug === 'string' && slug.trim()) {
+      const cleanSlug = slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/^-|-$/g, '');
+      if (cleanSlug.length < 2) {
+        return NextResponse.json({ error: 'Slug must be at least 2 characters.' }, { status: 400 });
+      }
+      const existing = await prisma.merchant.findUnique({ where: { slug: cleanSlug } });
+      if (existing && existing.id !== merchantId) {
+        return NextResponse.json({ error: 'This slug is already taken.' }, { status: 409 });
+      }
+      data.slug = cleanSlug;
+    }
 
     const merchant = await prisma.merchant.update({
       where: { id: merchantId },
@@ -81,7 +94,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       },
     });
 
-    return NextResponse.json({ storeSettings: merchant });
+    return NextResponse.json({ merchant });
   } catch (error) {
     console.error('Error updating store settings:', error);
     return NextResponse.json({ error: 'An internal error occurred.' }, { status: 500 });
