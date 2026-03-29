@@ -1,6 +1,7 @@
 'use client';
 
 import { useSession } from '@/components/providers';
+import { usePortalI18n } from '@/i18n/use-portal-i18n';
 import { useEffect, useState, useCallback } from 'react';
 import { PaymentStatusBadge } from '@/components/payment/payment-status';
 import { QrDisplay } from '@/components/payment/qr-display';
@@ -42,6 +43,7 @@ interface Payment {
 }
 
 export default function MerchantPaymentsPage() {
+  const t = usePortalI18n();
   const { data: session } = useSession();
   const merchantId = session?.user?.merchantId;
 
@@ -197,7 +199,7 @@ export default function MerchantPaymentsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-foreground">Payments</h1>
+        <h1 className="text-2xl font-semibold text-foreground">{t.payments.title}</h1>
         <button
           onClick={() => setShowForm(!showForm)}
           className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-light transition-colors"

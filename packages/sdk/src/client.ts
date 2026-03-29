@@ -24,10 +24,19 @@ export interface PaymentStatus {
   paidAt: string | null;
 }
 
+export interface ChainToken {
+  id: string;
+  symbol: string;
+  name: string;
+  contractAddress?: string;
+  decimals?: number;
+}
+
 export interface Chain {
   id: string;
   name: string;
-  tokens: { id: string; symbol: string; name: string }[];
+  chainIdNum?: number;
+  tokens: ChainToken[];
 }
 
 function tryEnv(key: string): string | undefined {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useSession } from '@/components/providers';
+import { usePortalI18n } from '@/i18n/use-portal-i18n';
 import { useEffect, useState, useRef } from 'react';
 
 interface Product {
@@ -16,14 +17,15 @@ interface Product {
 export default function MerchantProductsPage() {
   const { data: session } = useSession();
   const merchantId = session?.user?.merchantId;
+  const t = usePortalI18n();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [merchantSlug, setMerchantSlug] = useState('');
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [embedProduct, setEmbedProduct] = useState<Product | null>(null);
   const [linkCopiedId, setLinkCopiedId] = useState<string | null>(null);
+  const [storeLinkCopied, setStoreLinkCopied] = useState(false);
 
   // Create form state
   const [formName, setFormName] = useState('');
@@ -251,10 +253,28 @@ export default function MerchantProductsPage() {
     return <div className="text-muted text-sm">Loading...</div>;
   }
 
+  const isDemo = products.length === 0;
+  const demoProducts: Product[] = [
+    { id: 'demo-1', name: 'Americano', description: 'Classic black coffee', priceUsd: 4.50, imageUrl: '/uploads/products/americano.svg', isActive: true, createdAt: '' },
+    { id: 'demo-2', name: 'Cafe Latte', description: 'Espresso with steamed milk', priceUsd: 5.50, imageUrl: '/uploads/products/cafe-latte.svg', isActive: true, createdAt: '' },
+    { id: 'demo-3', name: 'Matcha Latte', description: 'Premium Japanese matcha', priceUsd: 6.50, imageUrl: '/uploads/products/matcha-latte.svg', isActive: true, createdAt: '' },
+    { id: 'demo-4', name: 'Croissant', description: 'Freshly baked butter croissant', priceUsd: 3.50, imageUrl: '/uploads/products/croissant.svg', isActive: true, createdAt: '' },
+  ];
+  const displayProducts = isDemo ? demoProducts : products;
+
+  const storeUrl = merchantSlug ? `${typeof window !== 'undefined' ? window.location.origin : ''}/store/${merchantSlug}` : '';
+
+  async function copyStoreLink() {
+    if (!storeUrl) return;
+    await navigator.clipboard.writeText(storeUrl);
+    setStoreLinkCopied(true);
+    setTimeout(() => setStoreLinkCopied(false), 2000);
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-foreground">Products</h1>
+        <h1 className="text-2xl font-semibold text-foreground">{t.products.title}</h1>
         <button
           onClick={() => setShowForm(!showForm)}
           className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-light transition-colors"
@@ -262,6 +282,30 @@ export default function MerchantProductsPage() {
           {showForm ? 'Cancel' : 'Add Product'}
         </button>
       </div>
+
+      {/* Store link */}
+      {merchantSlug && (
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2.5">
+          <span className="text-xs text-muted flex-shrink-0">Store</span>
+          <code className="flex-1 text-xs font-mono text-foreground truncate">{storeUrl}</code>
+          <button onClick={copyStoreLink} className="rounded-md border border-border px-2 py-1 text-[10px] font-medium text-foreground hover:bg-surface-alt transition-colors flex-shrink-0">
+            {storeLinkCopied ? 'Copied!' : 'Copy'}
+          </button>
+          <a href={storeUrl} target="_blank" rel="noopener noreferrer"
+            className="rounded-md border border-border px-2 py-1 text-[10px] font-medium text-foreground hover:bg-surface-alt transition-colors flex-shrink-0 inline-flex items-center gap-1">
+            Open
+            <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+          </a>
+        </div>
+      )}
+
+      {/* Demo banner */}
+      {isDemo && (
+        <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5">
+          <svg className="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>
+          <p className="text-xs text-primary">Showing demo products. Add your own products above to replace these.</p>
+        </div>
+      )}
 
       {error && (
         <div className="rounded-lg bg-error/10 px-3 py-2 text-sm text-error">
@@ -375,142 +419,58 @@ export default function MerchantProductsPage() {
       )}
 
       {/* Products grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {products.length === 0 && (
-          <div className="col-span-full rounded-lg border border-border bg-surface p-8 text-center text-muted text-sm">
-            No products yet. Create your first product above.
-          </div>
-        )}
-        {products.map((product) => (
-          <div
-            key={product.id}
-            className="rounded-lg border border-border bg-surface overflow-hidden flex flex-col"
-          >
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {displayProducts.map((product) => (
+          <div key={product.id} className="rounded-2xl border border-border bg-surface p-4 shadow-sm hover:shadow-md transition-shadow">
             {editingId === product.id ? (
-              <div className="p-4 space-y-3">
-                {/* Edit image */}
+              <div className="space-y-3">
                 <div className="space-y-2">
                   {editImagePreview && (
-                    <div className="relative w-full h-36 rounded-lg border border-border overflow-hidden">
-                      <img
-                        src={editImagePreview}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={removeEditImage}
-                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white text-xs flex items-center justify-center hover:bg-black/80"
-                      >
-                        &times;
-                      </button>
+                    <div className="relative w-16 h-16 rounded-xl border border-border overflow-hidden">
+                      <img src={editImagePreview} alt="Preview" className="w-full h-full object-cover" />
+                      <button type="button" onClick={removeEditImage} className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 text-white text-[8px] flex items-center justify-center">&times;</button>
                     </div>
                   )}
-                  <input
-                    ref={editFileRef}
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    onChange={handleEditFileChange}
-                    className="block w-full text-xs text-muted file:mr-2 file:rounded-lg file:border-0 file:bg-primary/10 file:px-2 file:py-1 file:text-xs file:font-medium file:text-primary hover:file:bg-primary/20 file:cursor-pointer"
-                  />
-                  {editUploading && (
-                    <p className="text-xs text-primary">Uploading...</p>
-                  )}
+                  <input ref={editFileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleEditFileChange}
+                    className="block w-full text-xs text-muted file:mr-2 file:rounded-lg file:border-0 file:bg-primary/10 file:px-2 file:py-1 file:text-xs file:font-medium file:text-primary" />
+                  {editUploading && <p className="text-xs text-primary">Uploading...</p>}
                 </div>
-                <input
-                  type="text"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="w-full border border-border rounded px-2 py-1.5 text-sm text-foreground bg-surface focus:outline-none focus:ring-2 focus:ring-primary-light"
-                  placeholder="Name"
-                />
-                <input
-                  type="text"
-                  value={editDescription}
-                  onChange={(e) => setEditDescription(e.target.value)}
-                  className="w-full border border-border rounded px-2 py-1.5 text-sm text-foreground bg-surface focus:outline-none focus:ring-2 focus:ring-primary-light"
-                  placeholder="Description"
-                />
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  value={editPrice}
-                  onChange={(e) => setEditPrice(e.target.value)}
-                  className="w-full border border-border rounded px-2 py-1.5 text-sm text-foreground bg-surface focus:outline-none focus:ring-2 focus:ring-primary-light"
-                  placeholder="Price"
-                />
+                <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Name"
+                  className="w-full border border-border rounded-lg px-2.5 py-1.5 text-sm text-foreground bg-surface focus:outline-none focus:ring-2 focus:ring-primary-light" />
+                <input type="text" value={editDescription} onChange={(e) => setEditDescription(e.target.value)} placeholder="Description"
+                  className="w-full border border-border rounded-lg px-2.5 py-1.5 text-sm text-foreground bg-surface focus:outline-none focus:ring-2 focus:ring-primary-light" />
+                <input type="number" step="0.01" min="0.01" value={editPrice} onChange={(e) => setEditPrice(e.target.value)} placeholder="Price"
+                  className="w-full border border-border rounded-lg px-2.5 py-1.5 text-sm text-foreground bg-surface focus:outline-none focus:ring-2 focus:ring-primary-light" />
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleSaveEdit(product.id)}
-                    disabled={saving || editUploading}
-                    className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-light transition-colors disabled:opacity-50"
-                  >
-                    {saving ? 'Saving...' : 'Save'}
-                  </button>
-                  <button
-                    onClick={cancelEdit}
-                    className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface-alt transition-colors"
-                  >
-                    Cancel
-                  </button>
+                  <button onClick={() => handleSaveEdit(product.id)} disabled={saving || editUploading}
+                    className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-light disabled:opacity-50">{saving ? 'Saving...' : 'Save'}</button>
+                  <button onClick={cancelEdit} className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface-alt">Cancel</button>
                 </div>
               </div>
             ) : (
-              <>
+              <div className="flex items-start gap-3">
                 {product.imageUrl ? (
-                  <div className="h-40 bg-surface-alt">
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="h-14 w-14 rounded-xl bg-surface-alt overflow-hidden flex-shrink-0">
+                    <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
                   </div>
                 ) : (
-                  <div className="h-40 bg-surface-alt flex items-center justify-center">
-                    <span className="text-3xl text-muted/30">No Image</span>
+                  <div className="h-14 w-14 rounded-xl bg-surface-alt flex items-center justify-center flex-shrink-0">
+                    <span className="text-2xl text-muted/30">☕</span>
                   </div>
                 )}
-                <div className="p-4 flex-1 flex flex-col">
-                  <div className="flex items-start justify-between">
-                    <h3 className="font-medium text-foreground">{product.name}</h3>
-                    <span
-                      className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                        product.isActive
-                          ? 'bg-success/10 text-success'
-                          : 'bg-error/10 text-error'
-                      }`}
-                    >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-foreground truncate">{product.name}</h3>
+                    <span className={`inline-block rounded-full px-1.5 py-0.5 text-[9px] font-medium flex-shrink-0 ${product.isActive ? 'bg-success/10 text-success' : 'bg-error/10 text-error'}`}>
                       {product.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
                   {product.description && (
-                    <p className="mt-1 text-sm text-muted flex-1">
-                      {product.description}
-                    </p>
+                    <p className="text-[11px] text-muted mt-0.5 line-clamp-1">{product.description}</p>
                   )}
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="text-lg font-bold text-foreground">
-                      ${product.priceUsd.toFixed(2)}
-                    </span>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="text-sm font-bold text-primary">${product.priceUsd.toFixed(2)}</span>
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      {product.isActive && merchantSlug && (
-                        <>
-                          <button
-                            onClick={() => copyPaymentLink(product)}
-                            className="rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
-                            title="Copy payment link"
-                          >
-                            {linkCopiedId === product.id ? 'Copied!' : 'Link'}
-                          </button>
-                          <button
-                            onClick={() => setEmbedProduct(product)}
-                            className="rounded-lg border border-accent/20 bg-accent/5 px-2.5 py-1 text-xs font-medium text-accent hover:bg-accent/10 transition-colors"
-                          >
-                            Embed
-                          </button>
-                        </>
-                      )}
                       <button
                         onClick={() => startEdit(product)}
                         className="rounded-lg border border-border px-2.5 py-1 text-xs font-medium text-foreground hover:bg-surface-alt transition-colors"
@@ -528,77 +488,12 @@ export default function MerchantProductsPage() {
                     </div>
                   </div>
                 </div>
-              </>
+              </div>
             )}
           </div>
         ))}
       </div>
 
-      {/* Embed Modal */}
-      {embedProduct && merchantSlug && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 px-4" onClick={() => setEmbedProduct(null)}>
-          <div className="w-full max-w-lg rounded-xl bg-surface p-6 shadow-xl space-y-5" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-foreground">Embed Payment — {embedProduct.name}</h3>
-              <button onClick={() => setEmbedProduct(null)} className="text-muted hover:text-foreground transition-colors text-xl">&times;</button>
-            </div>
-
-            {/* Direct Link */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-foreground">Payment Link</p>
-              <p className="text-xs text-muted">Share this link or redirect users to it from your app.</p>
-              <div className="flex gap-2">
-                <input type="text" readOnly value={getPaymentLink(embedProduct)} className="flex-1 rounded-lg border border-border bg-surface-alt px-3 py-2 font-mono text-xs text-foreground" />
-                <button onClick={() => copyPaymentLink(embedProduct)} className="rounded-lg bg-primary px-3 py-2 text-xs font-medium text-white hover:bg-primary-light transition-colors">
-                  Copy
-                </button>
-              </div>
-            </div>
-
-            {/* HTML Link */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-foreground">HTML Button</p>
-              <p className="text-xs text-muted">Paste this into your website.</p>
-              <div className="rounded-lg bg-[#0f172a] p-3 overflow-x-auto">
-                <pre className="text-xs font-mono text-white whitespace-pre-wrap">{`<a href="${getPaymentLink(embedProduct)}"
-   style="display:inline-block;padding:10px 24px;background:#4f46e5;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">
-  Pay $${embedProduct.priceUsd.toFixed(2)} with Crypto
-</a>`}</pre>
-              </div>
-            </div>
-
-            {/* SDK */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-foreground">React Component (SDK)</p>
-              <p className="text-xs text-muted">Use the Banksi SDK in your React app.</p>
-              <div className="rounded-lg bg-[#0f172a] p-3 overflow-x-auto">
-                <pre className="text-xs font-mono text-white whitespace-pre-wrap">{`import { BanksiPayButton } from 'banksi/react';
-
-<BanksiPayButton
-  amount={${embedProduct.priceUsd}}
-  merchantSlug="${merchantSlug}"
-  onPaymentConfirmed={(id) => {
-    console.log('Paid!', id);
-  }}
-/>`}</pre>
-              </div>
-            </div>
-
-            {/* iframe */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-foreground">Iframe Embed</p>
-              <p className="text-xs text-muted">Embed the full payment page in an iframe.</p>
-              <div className="rounded-lg bg-[#0f172a] p-3 overflow-x-auto">
-                <pre className="text-xs font-mono text-white whitespace-pre-wrap">{`<iframe
-  src="${getPaymentLink(embedProduct)}"
-  width="450" height="700"
-  style="border:none;border-radius:12px"
-></iframe>`}</pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

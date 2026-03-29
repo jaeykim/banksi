@@ -1,6 +1,7 @@
 'use client';
 
 import { useSession } from '@/components/providers';
+import { usePortalI18n } from '@/i18n/use-portal-i18n';
 import { useEffect, useState } from 'react';
 
 interface MerchantInfo {
@@ -13,6 +14,7 @@ interface MerchantInfo {
 }
 
 export default function MerchantSettingsPage() {
+  const t = usePortalI18n();
   const { data: session } = useSession();
   const merchantId = session?.user?.merchantId;
 
@@ -103,7 +105,7 @@ export default function MerchantSettingsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
+      <h1 className="text-2xl font-semibold text-foreground">{t.settings.title}</h1>
 
       {/* Project info */}
       <div className="rounded-lg border border-border bg-surface p-5 space-y-4">
@@ -147,13 +149,13 @@ export default function MerchantSettingsPage() {
         </div>
       </div>
 
-      {/* API Key */}
+      {/* API Key & Setup */}
       <div className="rounded-lg border border-border bg-surface p-5 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-medium text-foreground">API Key</h2>
+          <h2 className="text-lg font-medium text-foreground">API Key & Setup</h2>
           <button onClick={handleRegenerate} disabled={regenerating}
             className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface-alt transition-colors disabled:opacity-50">
-            {regenerating ? 'Regenerating...' : 'Regenerate'}
+            {regenerating ? 'Regenerating...' : 'Regenerate Key'}
           </button>
         </div>
 
@@ -172,20 +174,18 @@ export default function MerchantSettingsPage() {
             <code className="flex-1 rounded-lg bg-surface-alt px-3 py-2.5 font-mono text-xs text-muted">{maskedKey}</code>
           </div>
         )}
-      </div>
 
-      {/* Quick Setup — copy-paste .env */}
-      <div className="rounded-lg border border-primary/20 bg-primary/5 p-5 space-y-3">
-        <h2 className="text-lg font-medium text-foreground">Quick Setup</h2>
-        <p className="text-xs text-muted">Copy this to your project&apos;s <code className="rounded bg-surface-alt px-1 py-0.5 font-mono text-xs">.env</code> file:</p>
-        <div className="rounded-lg bg-[#0f172a] p-4 overflow-x-auto">
-          <pre className="text-xs font-mono text-white leading-relaxed">{envSnippet}</pre>
+        <div className="border-t border-border pt-4 space-y-3">
+          <p className="text-xs text-muted">Add to your <code className="rounded bg-surface-alt px-1 py-0.5 font-mono text-xs">.env</code>:</p>
+          <div className="rounded-lg bg-[#0f172a] p-3 overflow-x-auto">
+            <pre className="text-xs font-mono text-white">{envSnippet}</pre>
+          </div>
+          <button onClick={() => handleCopy(envSnippet)}
+            className="rounded-lg bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary-light transition-colors">
+            {copied ? 'Copied!' : 'Copy .env line'}
+          </button>
+          <p className="text-xs text-muted">Then tell your AI: <code className="rounded bg-surface-alt px-1 py-0.5 font-mono text-[10px]">npm install banksi and read https://banksi.vercel.app/api/docs to add crypto payments</code></p>
         </div>
-        <button onClick={() => handleCopy(envSnippet)}
-          className="rounded-lg bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary-light transition-colors">
-          {copied ? 'Copied!' : 'Copy .env line'}
-        </button>
-        <p className="text-xs text-muted">Then tell your AI: <code className="rounded bg-surface-alt px-1 py-0.5 font-mono text-[10px]">npm install banksi and read https://banksi.vercel.app/api/docs to add crypto payments</code></p>
       </div>
     </div>
   );

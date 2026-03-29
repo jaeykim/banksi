@@ -147,20 +147,47 @@ export default function PaymentSelectPage() {
 
   // ─── Fetch initial data ───────────────────────────
 
+  // Demo product data
+  const DEMO_PRODUCTS: Record<string, { name: string; description: string; priceUsd: number; imageUrl: string }> = {
+    'demo-1': { name: 'Americano', description: 'Classic black coffee', priceUsd: 4.50, imageUrl: '/uploads/products/americano.svg' },
+    'demo-2': { name: 'Cafe Latte', description: 'Espresso with steamed milk', priceUsd: 5.50, imageUrl: '/uploads/products/cafe-latte.svg' },
+    'demo-3': { name: 'Matcha Latte', description: 'Premium Japanese matcha', priceUsd: 6.50, imageUrl: '/uploads/products/matcha-latte.svg' },
+    'demo-4': { name: 'Croissant', description: 'Freshly baked butter croissant', priceUsd: 3.50, imageUrl: '/uploads/products/croissant.svg' },
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
-        const [productRes, chainsRes] = await Promise.all([
-          fetch(`/api/store/${slug}/products/${productId}`),
-          fetch('/api/chains'),
-        ]);
-        if (!productRes.ok) { setError('Product not found.'); return; }
-        const productData = await productRes.json();
-        setProduct(productData.product);
-        setMerchant(productData.merchant);
+        // Handle demo products
+        const isDemoProduct = productId.startsWith('demo-');
+        const demoData = DEMO_PRODUCTS[productId];
+
+        const chainsRes = await fetch('/api/chains');
         if (chainsRes.ok) {
           const chainsData = await chainsRes.json();
           setChains(chainsData.chains);
+        }
+
+        if (isDemoProduct && demoData) {
+          setProduct({ id: productId, name: demoData.name, description: demoData.description, priceUsd: demoData.priceUsd, imageUrl: demoData.imageUrl });
+          // Try to get merchant info
+          try {
+            const storeRes = await fetch(`/api/store/${slug}`);
+            if (storeRes.ok) {
+              const storeData = await storeRes.json();
+              setMerchant(storeData.merchant);
+            } else {
+              setMerchant({ name: slug, slug, storeBannerColor: '#d97706' });
+            }
+          } catch {
+            setMerchant({ name: slug, slug, storeBannerColor: '#d97706' });
+          }
+        } else {
+          const productRes = await fetch(`/api/store/${slug}/products/${productId}`);
+          if (!productRes.ok) { setError('Product not found.'); return; }
+          const productData = await productRes.json();
+          setProduct(productData.product);
+          setMerchant(productData.merchant);
         }
       } catch {
         setError('Failed to load payment page.');
@@ -212,11 +239,21 @@ export default function PaymentSelectPage() {
     setPayLoading(true);
     setPayError('');
     try {
-      const res = await fetch(`/api/store/${slug}/pay`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId, chainId: selectedChain, tokenId }),
-      });
+      let res;
+      if (productId.startsWith('demo-')) {
+        // Demo: use x402 pay API with merchantSlug + amount
+        res = await fetch('/api/x402/pay', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ merchantSlug: slug, chainId: selectedChain, tokenId, amount: product?.priceUsd || 0 }),
+        });
+      } else {
+        res = await fetch(`/api/store/${slug}/pay`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId, chainId: selectedChain, tokenId }),
+        });
+      }
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || 'Payment failed');
@@ -404,6 +441,13 @@ export default function PaymentSelectPage() {
               )}
             </div>
           </div>
+
+          {/* Demo donation notice */}
+          {productId.startsWith('demo-') && (
+            <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-2.5 text-center">
+              <p className="text-xs text-amber-700">This is a live demo. Payments made here are donations to the developer. Thank you!</p>
+            </div>
+          )}
 
           {/* ── STEP: Select ─────────────────────── */}
           {step === 'select' && (

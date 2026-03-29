@@ -3,6 +3,7 @@ import { getLocale, getDictionary } from '@/i18n/server';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { ScrollReveal } from '@/components/scroll-reveal';
 import { PromptCopyBlock } from '@/components/prompt-copy-block';
+import { TestimonialSlider } from '@/components/testimonial-slider';
 
 export default async function Home() {
   const locale = await getLocale();
@@ -129,12 +130,14 @@ export default async function Home() {
                 <p className="mt-3 text-muted max-w-lg mx-auto">{t.features.subheading}</p>
               </div>
             </ScrollReveal>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                { title: t.features.multiChain, desc: t.features.multiChainDesc, clr: 'from-primary/10 to-accent/10 text-primary', icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg> },
+                { title: t.features.monitoring, desc: t.features.monitoringDesc, clr: 'from-primary/10 to-accent/10 text-primary', icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /></svg> },
                 { title: t.features.secure, desc: t.features.secureDesc, clr: 'from-accent/10 to-primary/10 text-accent', icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33" /></svg> },
-                { title: t.features.monitoring, desc: t.features.monitoringDesc, clr: 'from-success/10 to-accent/10 text-success', icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /></svg> },
+                { title: t.features.autoAddress, desc: t.features.autoAddressDesc, clr: 'from-success/10 to-primary/10 text-success', icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75" /></svg> },
+                { title: t.features.multiChain, desc: t.features.multiChainDesc, clr: 'from-primary/10 to-primary-light/10 text-primary', icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg> },
                 { title: t.features.x402, desc: t.features.x402Desc, clr: 'from-warning/10 to-accent/10 text-warning', icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg> },
+                { title: t.features.dashboard, desc: t.features.dashboardDesc, clr: 'from-primary-light/10 to-success/10 text-primary-light', icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg> },
               ].map((f, i) => (
                 <ScrollReveal key={f.title} delay={i * 80}>
                   <div className="group h-full rounded-2xl border border-border bg-surface p-6 hover:border-primary/20 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
@@ -447,24 +450,11 @@ export default async function Home() {
                 <p className="mt-3 text-muted max-w-lg mx-auto">{t.testimonials.subheading}</p>
               </div>
             </ScrollReveal>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {[
-                { q: t.testimonials.t1, name: t.testimonials.t1Name, role: t.testimonials.t1Role, accent: 'border-accent/30' },
-                { q: t.testimonials.t2, name: t.testimonials.t2Name, role: t.testimonials.t2Role, accent: 'border-primary/30' },
-                { q: t.testimonials.t3, name: t.testimonials.t3Name, role: t.testimonials.t3Role, accent: 'border-success/30' },
-              ].map((rev) => (
-                <ScrollReveal key={rev.name}>
-                  <div className={`h-full rounded-2xl border-2 ${rev.accent} bg-surface p-6 flex flex-col`}>
-                    <svg className="h-7 w-7 text-muted/20 mb-3" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10H0z" /></svg>
-                    <p className="text-sm leading-relaxed text-foreground flex-1">&ldquo;{rev.q}&rdquo;</p>
-                    <div className="mt-4 pt-3 border-t border-border">
-                      <p className="text-sm font-semibold text-foreground">{rev.name}</p>
-                      <p className="text-xs text-muted">{rev.role}</p>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
+            <TestimonialSlider testimonials={Array.from({ length: 10 }, (_, i) => ({
+              q: t.testimonials[`t${i + 1}` as keyof typeof t.testimonials] as string,
+              name: t.testimonials[`t${i + 1}Name` as keyof typeof t.testimonials] as string,
+              role: t.testimonials[`t${i + 1}Role` as keyof typeof t.testimonials] as string,
+            }))} />
           </div>
         </section>
 
@@ -479,23 +469,17 @@ export default async function Home() {
               </div>
             </ScrollReveal>
             <ScrollReveal delay={100}>
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <Link href="/examples/cafe" target="_blank" className="group rounded-2xl border border-border bg-surface p-6 hover:border-amber-300 hover:shadow-lg hover:-translate-y-0.5 transition-all">
                   <span className="text-3xl">☕</span>
                   <h3 className="mt-3 text-sm font-semibold text-foreground group-hover:text-amber-700">{t.demo.demoCard1}</h3>
                   <p className="mt-1 text-xs text-muted">{t.demo.demoCard1Desc}</p>
                   <p className="mt-3 text-xs font-semibold text-amber-600">{t.demo.demoCard1Cta} &rarr;</p>
                 </Link>
-                <Link href="/store/seoul-coffee" target="_blank" className="group rounded-2xl border border-border bg-surface p-6 hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5 transition-all">
-                  <span className="text-3xl">🛒</span>
-                  <h3 className="mt-3 text-sm font-semibold text-foreground group-hover:text-primary">{t.demo.demoCard2}</h3>
-                  <p className="mt-1 text-xs text-muted">{t.demo.demoCard2Desc}</p>
-                  <p className="mt-3 text-xs font-semibold text-primary">{t.demo.demoCard2Cta} &rarr;</p>
-                </Link>
-                <Link href="/login" target="_blank" className="group rounded-2xl border border-border bg-surface p-6 hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5 transition-all">
+                <Link href="/examples/dashboard" target="_blank" className="group rounded-2xl border border-border bg-surface p-6 hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5 transition-all">
                   <span className="text-3xl">📊</span>
                   <h3 className="mt-3 text-sm font-semibold text-foreground group-hover:text-primary">{t.demo.demoCard3}</h3>
-                  <p className="mt-1 text-xs text-muted">{t.demo.demoCard3Desc} Login: merchant@banksi.io / merchant123</p>
+                  <p className="mt-1 text-xs text-muted">{t.demo.demoCard3Desc}</p>
                   <p className="mt-3 text-xs font-semibold text-primary">{t.demo.demoCard3Cta} &rarr;</p>
                 </Link>
               </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useSession } from '@/components/providers';
+import { usePortalI18n } from '@/i18n/use-portal-i18n';
 import { useEffect, useState } from 'react';
 
 interface Chain {
@@ -89,6 +90,7 @@ function groupChainsByProtocol(chains: Chain[]): ProtocolGroup[] {
 }
 
 export default function MerchantWalletsPage() {
+  const t = usePortalI18n();
   const { data: session } = useSession();
   const merchantId = session?.user?.merchantId;
 
@@ -234,7 +236,7 @@ export default function MerchantWalletsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-foreground">Withdrawal Wallets</h1>
+      <h1 className="text-2xl font-semibold text-foreground">{t.wallets.title}</h1>
       <p className="text-sm text-muted">
         Configure wallet addresses by protocol. EVM-compatible chains (Ethereum, Polygon, BSC, Arbitrum) share the same address format, so you only need to enter it once.
       </p>

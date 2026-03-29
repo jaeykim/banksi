@@ -23,7 +23,6 @@ const navByRole: Record<string, NavItem[]> = {
   MERCHANT: [
     { labelKey: 'dashboard', href: '/merchant' },
     { labelKey: 'products', href: '/merchant/products' },
-    { labelKey: 'store', href: '/merchant/store' },
     { labelKey: 'payments', href: '/merchant/payments' },
     { labelKey: 'wallets', href: '/merchant/wallets' },
     { labelKey: 'settings', href: '/merchant/settings' },

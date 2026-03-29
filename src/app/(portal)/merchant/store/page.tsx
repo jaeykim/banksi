@@ -117,18 +117,19 @@ export default function MerchantStorePage() {
       {/* Store Link */}
       <div className="rounded-lg border border-border bg-surface p-5 space-y-3">
         <h2 className="text-lg font-medium text-foreground">Store Link</h2>
-        <div className="flex items-center gap-3">
-          <code className="flex-1 rounded-md bg-surface-alt px-3 py-2 text-sm font-mono text-foreground">
-            {typeof window !== 'undefined'
-              ? `${window.location.origin}${storeUrl}`
-              : storeUrl}
+        <div className="flex items-center gap-2">
+          <code className="flex-1 rounded-lg bg-surface-alt px-3 py-2.5 text-xs font-mono text-foreground truncate">
+            {typeof window !== 'undefined' ? `${window.location.origin}${storeUrl}` : storeUrl}
           </code>
-          <button
-            onClick={handleCopyLink}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-light transition-colors"
-          >
-            {copied ? 'Copied!' : 'Copy Store Link'}
+          <button onClick={handleCopyLink}
+            className="rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground hover:bg-surface-alt transition-colors flex-shrink-0">
+            {copied ? 'Copied!' : 'Copy'}
           </button>
+          <a href={storeUrl} target="_blank" rel="noopener noreferrer"
+            className="rounded-lg bg-primary px-3 py-2 text-xs font-medium text-white hover:bg-primary-light transition-colors flex-shrink-0 inline-flex items-center gap-1">
+            Open Store
+            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+          </a>
         </div>
       </div>
 
