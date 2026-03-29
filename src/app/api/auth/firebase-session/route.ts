@@ -13,7 +13,10 @@ export async function POST(request: NextRequest) {
 
     // Verify Firebase token
     const decoded = await getAdminAuth().verifyIdToken(idToken);
-    const { uid, email, name: firebaseName } = decoded;
+    const uid = decoded.uid;
+    const email = decoded.email;
+    // displayName comes from Google or updateProfile
+    const firebaseName = decoded.name || decoded.displayName || null;
 
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
