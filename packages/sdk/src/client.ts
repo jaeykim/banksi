@@ -30,11 +30,15 @@ export interface Chain {
   tokens: { id: string; symbol: string; name: string }[];
 }
 
+function tryEnv(key: string): string | undefined {
+  try { return typeof process !== 'undefined' ? process.env?.[key] : undefined; } catch { return undefined; }
+}
+
 function getConfig(override?: Partial<BanksiConfig>): BanksiConfig {
   return {
-    baseUrl: override?.baseUrl || process.env.BANKSI_URL || 'https://banksi.vercel.app',
-    merchantSlug: override?.merchantSlug || process.env.BANKSI_MERCHANT_SLUG || undefined,
-    apiKey: override?.apiKey || process.env.BANKSI_API_KEY || undefined,
+    baseUrl: override?.baseUrl || tryEnv('NEXT_PUBLIC_BANKSI_URL') || tryEnv('BANKSI_URL') || 'https://banksi.vercel.app',
+    merchantSlug: override?.merchantSlug || tryEnv('NEXT_PUBLIC_BANKSI_MERCHANT_SLUG') || tryEnv('BANKSI_MERCHANT_SLUG') || undefined,
+    apiKey: override?.apiKey || tryEnv('NEXT_PUBLIC_BANKSI_API_KEY') || tryEnv('BANKSI_API_KEY') || undefined,
   };
 }
 

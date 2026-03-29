@@ -7,8 +7,6 @@ interface BanksiPayButtonProps extends Partial<BanksiConfig> {
   amount: number;
   chainId?: string;
   tokenId?: string;
-  /** Open Banksi payment page in a popup window instead of inline UI */
-  popup?: boolean;
   onPaymentCreated?: (payment: PaymentResult) => void;
   onPaymentConfirmed?: (paymentId: string) => void;
   children?: React.ReactNode;
@@ -19,7 +17,6 @@ export function BanksiPayButton({
   amount,
   chainId,
   tokenId,
-  popup = true,
   onPaymentCreated,
   onPaymentConfirmed,
   children,
@@ -35,8 +32,7 @@ export function BanksiPayButton({
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const banksiUrl = config.baseUrl || process.env.NEXT_PUBLIC_BANKSI_URL || 'https://banksi.vercel.app';
-  const merchantSlug = config.merchantSlug || process.env.NEXT_PUBLIC_BANKSI_MERCHANT_SLUG || '';
+  const banksiUrl = config.baseUrl || 'https://banksi.vercel.app';
 
   useEffect(() => {
     if (step === 'select' && chains.length === 0) {
@@ -44,7 +40,7 @@ export function BanksiPayButton({
     }
   }, [step, chains.length, client]);
 
-  // Poll for payment confirmation
+  // Poll for confirmation
   useEffect(() => {
     if (!payment || step !== 'paying') return;
     const iv = setInterval(async () => {
@@ -68,29 +64,30 @@ export function BanksiPayButton({
       setPayment(result);
       setStep('paying');
       onPaymentCreated?.(result);
-
-      if (popup) {
-        // Open Banksi payment page in popup
-        const payUrl = `${banksiUrl}/pay/${result.paymentId}`;
-        const w = 480;
-        const h = 700;
-        const left = (window.screen.width - w) / 2;
-        const top = (window.screen.height - h) / 2;
-        window.open(payUrl, 'banksi-pay', `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no`);
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Payment failed');
     } finally {
       setLoading(false);
     }
-  }, [client, amount, popup, banksiUrl, onPaymentCreated]);
+  }, [client, amount, onPaymentCreated]);
 
-  const handleTokenSelect = useCallback((tokenId: string) => {
-    setSelectedToken(tokenId);
-    handleCreateAndOpen(selectedChain, tokenId);
+  const handleTokenSelect = useCallback((tid: string) => {
+    setSelectedToken(tid);
+    handleCreateAndOpen(selectedChain, tid);
   }, [selectedChain, handleCreateAndOpen]);
 
-  // Idle — show pay button
+  const handleClose = useCallback(() => {
+    if (step === 'done') {
+      setStep('idle');
+      setPayment(null);
+      setSelectedChain(chainId || '');
+      setSelectedToken(tokenId || '');
+    } else {
+      setStep('idle');
+    }
+  }, [step, chainId, tokenId]);
+
+  // Idle — just the button
   if (step === 'idle') {
     return (
       <button
@@ -104,99 +101,106 @@ export function BanksiPayButton({
   }
 
   const selectedChainData = chains.find((c) => c.id === selectedChain);
+  const overlayStyle: React.CSSProperties = {
+    position: 'fixed', inset: 0, zIndex: 99999,
+    display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+  };
+  const backdropStyle: React.CSSProperties = {
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
+    transition: 'opacity 0.2s',
+  };
+  const sheetStyle: React.CSSProperties = {
+    position: 'relative', width: '100%', maxWidth: 480,
+    maxHeight: '90vh', background: '#fff',
+    borderRadius: '16px 16px 0 0', overflow: 'hidden',
+    boxShadow: '0 -4px 40px rgba(0,0,0,0.15)',
+    animation: 'banksi-slide-up 0.3s ease',
+  };
 
   return (
-    <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-5 shadow-lg space-y-4" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+    <>
+      <style>{`@keyframes banksi-slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
+      <div style={overlayStyle}>
+        <div style={backdropStyle} onClick={handleClose} />
 
-      {/* Select chain & token */}
-      {step === 'select' && (
-        <>
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-gray-900">Pay ${amount.toFixed(2)}</p>
-            <button onClick={() => { setStep('idle'); setSelectedChain(''); setSelectedToken(''); }}
-              className="text-xs text-gray-400 hover:text-gray-600">&times;</button>
+        <div style={sheetStyle}>
+          {/* Handle bar */}
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0 4px' }}>
+            <div style={{ width: 36, height: 4, borderRadius: 2, background: '#d1d5db' }} />
           </div>
 
-          <div>
-            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Network</p>
-            <div className="flex flex-wrap gap-1.5">
-              {chains.length === 0 && <p className="text-xs text-gray-400">Loading chains...</p>}
-              {chains.map((c) => (
-                <button key={c.id} onClick={() => { setSelectedChain(c.id); setSelectedToken(''); }}
-                  className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${selectedChain === c.id ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}>
-                  {c.name}
-                </button>
-              ))}
-            </div>
-          </div>
+          {/* Select chain & token */}
+          {step === 'select' && (
+            <div style={{ padding: '12px 20px 24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <span style={{ fontSize: 16, fontWeight: 700, color: '#111' }}>Pay ${amount.toFixed(2)}</span>
+                <button onClick={handleClose} style={{ fontSize: 20, color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1 }}>&times;</button>
+              </div>
 
-          {selectedChainData && (
-            <div>
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Token</p>
-              <div className="flex gap-1.5">
-                {selectedChainData.tokens.map((tk) => (
-                  <button key={tk.id} onClick={() => handleTokenSelect(tk.id)} disabled={loading}
-                    className={`rounded-lg border px-4 py-2 text-xs font-medium transition-colors disabled:opacity-50 ${selectedToken === tk.id ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}>
-                    {tk.symbol}
+              {error && <p style={{ fontSize: 13, color: '#ef4444', marginBottom: 12 }}>{error}</p>}
+
+              <p style={{ fontSize: 10, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Network</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
+                {chains.length === 0 && <span style={{ fontSize: 12, color: '#9ca3af' }}>Loading...</span>}
+                {chains.map((c) => (
+                  <button key={c.id} onClick={() => { setSelectedChain(c.id); setSelectedToken(''); }}
+                    style={{ padding: '8px 14px', fontSize: 12, fontWeight: 600, borderRadius: 8, border: `2px solid ${selectedChain === c.id ? '#6366f1' : '#e5e7eb'}`, background: selectedChain === c.id ? '#eef2ff' : '#fff', color: selectedChain === c.id ? '#4338ca' : '#6b7280', cursor: 'pointer' }}>
+                    {c.name}
                   </button>
                 ))}
               </div>
+
+              {selectedChainData && (
+                <>
+                  <p style={{ fontSize: 10, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Token</p>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    {selectedChainData.tokens.map((tk) => (
+                      <button key={tk.id} onClick={() => handleTokenSelect(tk.id)} disabled={loading}
+                        style={{ padding: '10px 20px', fontSize: 12, fontWeight: 600, borderRadius: 8, border: `2px solid ${selectedToken === tk.id ? '#6366f1' : '#e5e7eb'}`, background: selectedToken === tk.id ? '#eef2ff' : '#fff', color: selectedToken === tk.id ? '#4338ca' : '#6b7280', cursor: 'pointer', opacity: loading ? 0.5 : 1 }}>
+                        {tk.symbol}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {loading && (
+                <p style={{ fontSize: 12, color: '#6366f1', textAlign: 'center', marginTop: 16 }}>Creating payment...</p>
+              )}
             </div>
           )}
 
-          {loading && (
-            <div className="flex items-center justify-center gap-2 py-2">
-              <svg className="animate-spin h-4 w-4 text-indigo-500" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-              <span className="text-xs text-gray-500">Creating payment...</span>
+          {/* Payment page in iframe */}
+          {step === 'paying' && payment && (
+            <div style={{ height: 'min(80vh, 600px)' }}>
+              <iframe
+                src={`${banksiUrl}/pay/${payment.paymentId}`}
+                style={{ width: '100%', height: '100%', border: 'none' }}
+                title="Banksi Payment"
+              />
             </div>
           )}
-        </>
-      )}
 
-      {/* Paying — waiting for confirmation */}
-      {step === 'paying' && payment && (
-        <>
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-gray-900">{payment.amountExpected} {payment.tokenSymbol}</p>
-            <span className="text-xs text-gray-400">on {payment.chainName}</span>
+          {/* Done */}
+          {step === 'done' && (
+            <div style={{ padding: '32px 20px', textAlign: 'center' }}>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#16a34a" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+              </div>
+              <p style={{ fontSize: 16, fontWeight: 700, color: '#15803d' }}>Payment Confirmed!</p>
+              <button onClick={handleClose} style={{ marginTop: 16, padding: '10px 32px', fontSize: 13, fontWeight: 600, borderRadius: 8, border: 'none', background: '#6366f1', color: '#fff', cursor: 'pointer' }}>Done</button>
+            </div>
+          )}
+
+          {/* Powered by */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 4, padding: '8px 0 12px' }}>
+            <span style={{ fontSize: 9, color: '#d1d5db' }}>Powered by</span>
+            <span style={{ fontSize: 9, fontWeight: 600, color: '#9ca3af' }}>Banksi</span>
           </div>
-
-          <div className="flex items-center gap-2 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
-            <span className="relative flex h-2 w-2"><span className="absolute h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" /><span className="relative h-2 w-2 rounded-full bg-amber-500" /></span>
-            <span className="text-xs text-amber-700">Waiting for on-chain confirmation...</span>
-          </div>
-
-          {/* Reopen payment page */}
-          <button
-            onClick={() => window.open(`${banksiUrl}/pay/${payment.paymentId}`, 'banksi-pay', 'width=480,height=700')}
-            className="w-full rounded-lg bg-indigo-600 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
-          >
-            Open Payment Page
-          </button>
-
-          <p className="text-[10px] text-gray-400 text-center">
-            Payment page opened in a new window. Complete the payment there.
-          </p>
-        </>
-      )}
-
-      {/* Done */}
-      {step === 'done' && (
-        <div className="text-center py-3">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-3">
-            <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-          </div>
-          <p className="text-sm font-semibold text-green-700">Payment Confirmed!</p>
         </div>
-      )}
-
-      {/* Powered by */}
-      <div className="flex items-center justify-center gap-1.5 pt-1">
-        <span className="text-[9px] text-gray-300">Powered by</span>
-        <span className="text-[9px] font-semibold text-gray-400">Banksi</span>
       </div>
-    </div>
+    </>
   );
 }
 

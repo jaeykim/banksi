@@ -45,11 +45,15 @@ app.use('/api/premium', createBanksiPaywall({ amount: 0.10 }));
 
 ## React — Pay Button Component
 
+IMPORTANT: In React (browser) components, you MUST pass apiKey as a prop.
+Environment variables are NOT accessible in the browser from npm packages.
+
 \`\`\`tsx
 import { BanksiPayButton } from 'banksi/react';
 
 <BanksiPayButton
   amount={4.50}
+  apiKey="bks_your_api_key"
   onPaymentConfirmed={(id) => {
     console.log('Payment confirmed:', id);
     // Grant access, deliver product, etc.
@@ -57,8 +61,8 @@ import { BanksiPayButton } from 'banksi/react';
 />
 \`\`\`
 
-The component renders a button. When clicked, it shows chain/token selection,
-generates a unique deposit address, displays QR code, and polls for on-chain confirmation.
+The component opens the Banksi payment page in a popup window where users can
+connect their wallet, scan QR code, or copy the deposit address.
 
 ## BanksiClient — Programmatic API
 

@@ -80,6 +80,11 @@ export default function PublicPaymentPage() {
   const [showQr, setShowQr] = useState(false);
 
   const { status: liveStatus, txHash } = usePaymentStatus(paymentId);
+  const [isIframe, setIsIframe] = useState(false);
+
+  useEffect(() => {
+    try { setIsIframe(window.self !== window.top); } catch { setIsIframe(true); }
+  }, []);
 
   const fetchPayment = useCallback(async () => {
     try {
@@ -294,8 +299,8 @@ export default function PublicPaymentPage() {
                 <span className="text-sm font-mono font-semibold text-gray-900 tabular-nums">{timeLeft}</span>
               </div>
 
-              {/* Wallet buttons (EVM) */}
-              {isEvmChain && (
+              {/* Wallet buttons (EVM) — hidden in iframe */}
+              {isEvmChain && !isIframe && (
                 <div className="space-y-2">
                   {hasInjectedWallet && (
                     <button
@@ -339,20 +344,35 @@ export default function PublicPaymentPage() {
                 </div>
               )}
 
-              {/* QR + Address */}
+              {/* Open in new tab — shown in iframe */}
+              {isIframe && (
+                <a
+                  href={typeof window !== 'undefined' ? window.location.href : ''}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-500 py-3 text-sm font-semibold text-white hover:bg-indigo-600 transition-colors"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                  Open in new tab to connect wallet
+                </a>
+              )}
+
+              {/* QR + Address — always visible in iframe, toggleable otherwise */}
               <div className="rounded-2xl bg-white p-5 shadow-sm shadow-slate-100 space-y-4">
-                <div className="flex items-center justify-center">
-                  <button
-                    onClick={() => setShowQr(!showQr)}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors"
-                  >
-                    <svg className={`h-4 w-4 transition-transform ${showQr ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                    {showQr ? 'Hide QR Code' : 'Show QR Code'}
-                  </button>
-                </div>
-                {showQr && (
+                {!isIframe && (
+                  <div className="flex items-center justify-center">
+                    <button
+                      onClick={() => setShowQr(!showQr)}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors"
+                    >
+                      <svg className={`h-4 w-4 transition-transform ${showQr ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                      {showQr ? 'Hide QR Code' : 'Show QR Code'}
+                    </button>
+                  </div>
+                )}
+                {(showQr || isIframe) && (
                   <div className="flex justify-center py-2">
                     <div className="rounded-2xl border border-slate-100 bg-white p-4">
                       <QRCodeSVG

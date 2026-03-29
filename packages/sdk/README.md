@@ -40,11 +40,14 @@ app.use('/api/premium', createBanksiPaywall({ amount: 0.10 }));
 
 ## React — Pay Button
 
+**Important:** In React/browser components, pass `apiKey` as a prop (environment variables are not accessible in the browser from npm packages).
+
 ```tsx
 import { BanksiPayButton } from 'banksi/react';
 
 <BanksiPayButton
   amount={4.50}
+  apiKey="bks_your_key_here"
   onPaymentConfirmed={(id) => console.log('Paid!', id)}
 />
 ```
