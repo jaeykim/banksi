@@ -29,9 +29,9 @@ export async function GET() {
     return corsHeaders(NextResponse.json({ chains }));
   } catch (error) {
     console.error('Error listing chains:', error);
-    return NextResponse.json(
+    return corsHeaders(NextResponse.json(
       { error: 'An internal error occurred.' },
       { status: 500 }
-    );
+    ));
   }
 }

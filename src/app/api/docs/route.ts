@@ -150,7 +150,7 @@ Embed options:
 
 ## Pricing
 
-1% per successful transaction. No monthly fees. Deducted during fund settlement.
+0.5% per successful transaction. No monthly fees. Deducted during fund settlement.
 `;
 
 export async function GET() {

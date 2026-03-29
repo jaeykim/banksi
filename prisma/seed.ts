@@ -281,7 +281,7 @@ async function main() {
   // ─── System Settings ─────────────────────────────────
 
   const defaultSettings = [
-    { key: "sweep_fee_percent", value: "1.0" },
+    { key: "sweep_fee_percent", value: "0.5" },
     { key: "sweep_fee_address", value: "" },
     { key: "auto_sweep_enabled", value: "false" },
     { key: "auto_sweep_interval_minutes", value: "10" },

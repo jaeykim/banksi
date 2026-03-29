@@ -6,18 +6,20 @@ import { corsHeaders, corsOptionsResponse } from '@/lib/cors';
 
 export async function OPTIONS() { return corsOptionsResponse(); }
 
+function corsJson(data: unknown, status: number) {
+  return corsHeaders(NextResponse.json(data, { status }));
+}
+
 // POST /api/x402/pay — Create a payment for x402 paywall
-// Supports: API key auth (Authorization: Bearer bks_xxx) or merchantSlug in body
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { merchantSlug, chainId, tokenId, amount } = body;
 
     if (!chainId || !tokenId || !amount) {
-      return NextResponse.json({ error: 'chainId, tokenId, and amount are required.' }, { status: 400 });
+      return corsJson({ error: 'chainId, tokenId, and amount are required.' }, 400);
     }
 
-    // Resolve merchant: API key first, then merchantSlug
     let merchantId: string;
     let resolvedSlug: string;
 
@@ -31,17 +33,17 @@ export async function POST(request: NextRequest) {
         select: { id: true, slug: true, isActive: true },
       });
       if (!merchant || !merchant.isActive) {
-        return NextResponse.json({ error: 'Merchant not found.' }, { status: 404 });
+        return corsJson({ error: 'Merchant not found.' }, 404);
       }
       merchantId = merchant.id;
       resolvedSlug = merchant.slug;
     } else {
-      return NextResponse.json({ error: 'Provide Authorization header (Bearer bks_xxx) or merchantSlug in body.' }, { status: 400 });
+      return corsJson({ error: 'Provide Authorization header (Bearer bks_xxx) or merchantSlug in body.' }, 400);
     }
 
     const token = await prisma.token.findUnique({ where: { id: tokenId } });
     if (!token || !token.isActive) {
-      return NextResponse.json({ error: 'Token not found.' }, { status: 404 });
+      return corsJson({ error: 'Token not found.' }, 404);
     }
 
     const result = await createPayment({
@@ -54,17 +56,17 @@ export async function POST(request: NextRequest) {
       metadata: JSON.stringify({ type: 'x402', merchantSlug: resolvedSlug }),
     });
 
-    return corsHeaders(NextResponse.json({
+    return corsJson({
       paymentId: result.paymentId,
       address: result.address,
       amountExpected: result.amountExpected,
       tokenSymbol: result.tokenSymbol,
       chainName: result.chainName,
       expiresAt: result.expiresAt,
-    }, { status: 201 }));
+    }, 201);
   } catch (error) {
     console.error('x402 pay error:', error);
     const msg = error instanceof Error ? error.message : 'An internal error occurred.';
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return corsJson({ error: msg }, 500);
   }
 }

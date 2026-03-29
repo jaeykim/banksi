@@ -53,7 +53,7 @@
   "pricing": {
     "heading": "Precios Simples",
     "subheading": "Sin cuotas mensuales. Sin costos de configuracion. Solo una pequena comision por pago exitoso.",
-    "fee": "1%",
+    "fee": "0.5%",
     "feeLabel": "por transaccion",
     "feeDesc": "Solo se cobra en pagos exitosos. Se descuenta automaticamente durante la liquidacion.",
     "item1": "Sin suscripcion mensual",

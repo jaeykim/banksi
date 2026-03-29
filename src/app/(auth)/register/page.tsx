@@ -113,7 +113,7 @@ const paywall = createBanksiPaywall({ amount: 0.10 });`}</code></pre>
           </div>
 
           <div className="rounded-xl border border-border bg-surface-alt/50 px-4 py-3 text-xs text-muted">
-            <span className="font-medium text-foreground">Pricing:</span> 1% fee per successful transaction, deducted automatically during sweep. No monthly fees. Testnet usage is free.
+            <span className="font-medium text-foreground">Pricing:</span> 0.5% fee per successful transaction, deducted automatically during sweep. No monthly fees. Testnet usage is free.
           </div>
 
           <div className="flex gap-3">

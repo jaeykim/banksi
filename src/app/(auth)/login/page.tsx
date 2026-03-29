@@ -127,7 +127,7 @@ export default function LoginPage() {
           </div>
 
           <div className="rounded-xl border border-border bg-surface-alt/50 px-4 py-3 text-xs text-muted mb-6">
-            <span className="font-medium text-foreground">Pricing:</span> 1% fee per successful transaction. No monthly fees.
+            <span className="font-medium text-foreground">Pricing:</span> 0.5% fee per successful transaction. No monthly fees.
           </div>
 
           <button onClick={() => router.push('/merchant')}

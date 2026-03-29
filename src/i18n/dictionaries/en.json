@@ -53,7 +53,7 @@
   "pricing": {
     "heading": "Simple Pricing",
     "subheading": "No monthly fees. No setup costs. Just a small fee per successful payment.",
-    "fee": "1%",
+    "fee": "0.5%",
     "feeLabel": "per transaction",
     "feeDesc": "Only charged on successful payments. Swept automatically during fund settlement.",
     "item1": "No monthly subscription",
