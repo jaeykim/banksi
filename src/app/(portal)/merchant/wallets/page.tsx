@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/components/providers';
 import { useEffect, useState } from 'react';
 
 interface Chain {
@@ -90,7 +90,7 @@ function groupChainsByProtocol(chains: Chain[]): ProtocolGroup[] {
 
 export default function MerchantWalletsPage() {
   const { data: session } = useSession();
-  const merchantId = (session?.user as { merchantId?: string })?.merchantId;
+  const merchantId = session?.user?.merchantId;
 
   const [wallets, setWallets] = useState<Wallet[]>([]);
   const [chains, setChains] = useState<Chain[]>([]);

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getSession } from '@/lib/auth-session';
 import { monitorPendingPayments } from '@/lib/payments/monitor';
 
 // POST /api/payments/verify - Cron endpoint to monitor all pending payments (admin-only)
@@ -15,7 +14,7 @@ export async function POST(_request: NextRequest) {
       // Authenticated via cron secret -- proceed
     } else {
       // Fall back to session auth
-      const session = await getServerSession(authOptions);
+      const session = await getSession();
       if (!session || session.user.role !== 'ADMIN') {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }

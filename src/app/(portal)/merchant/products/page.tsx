@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/components/providers';
 import { useEffect, useState, useRef } from 'react';
 
 interface Product {
@@ -15,7 +15,7 @@ interface Product {
 
 export default function MerchantProductsPage() {
   const { data: session } = useSession();
-  const merchantId = (session?.user as { merchantId?: string })?.merchantId;
+  const merchantId = session?.user?.merchantId;
 
   const [products, setProducts] = useState<Product[]>([]);
   const [merchantSlug, setMerchantSlug] = useState('');

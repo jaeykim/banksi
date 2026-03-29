@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getSession } from '@/lib/auth-session';
 import { prisma } from '@/lib/prisma';
 import { generateApiKey } from '@/lib/merchants/create';
 
@@ -9,7 +8,7 @@ type RouteContext = { params: Promise<{ merchantId: string }> };
 // POST /api/merchants/[merchantId]/api-key — Regenerate API key
 export async function POST(_request: NextRequest, { params }: RouteContext) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

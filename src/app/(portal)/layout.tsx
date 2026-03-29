@@ -1,6 +1,6 @@
 'use client';
 
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from '@/components/providers';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode, useEffect } from 'react';
@@ -34,7 +34,7 @@ const navByRole: Record<string, NavItem[]> = {
 };
 
 function PortalLayoutInner({ children }: { children: ReactNode }) {
-  const { data: session, status } = useSession();
+  const { data: session, status, signOut } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const t = usePortalI18n();
@@ -55,7 +55,7 @@ function PortalLayoutInner({ children }: { children: ReactNode }) {
 
   if (!session) return null;
 
-  const role = (session.user as { role?: string })?.role || 'USER';
+  const role = session.user.role || 'USER';
   const navItems = navByRole[role] || navByRole.USER;
 
   return (
@@ -97,7 +97,7 @@ function PortalLayoutInner({ children }: { children: ReactNode }) {
             {role.toLowerCase()}
           </div>
           <button
-            onClick={() => signOut({ callbackUrl: '/login' })}
+            onClick={async () => { await signOut(); router.push('/login'); }}
             className="mt-3 w-full rounded-md border border-white/10 px-3 py-1.5 text-xs font-medium text-sidebar-text hover:bg-white/5 hover:text-white transition-colors"
           >
             {t.nav.signOut}

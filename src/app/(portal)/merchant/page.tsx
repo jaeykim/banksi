@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/components/providers';
 import { useEffect, useState } from 'react';
 import { usePortalI18n } from '@/i18n/use-portal-i18n';
 import { ChainIcon } from '@/components/chain-icon';
@@ -196,7 +196,7 @@ function DonutChart({ data, colorMap }: {
 
 export default function MerchantDashboard() {
   const { data: session } = useSession();
-  const merchantId = (session?.user as { merchantId?: string })?.merchantId;
+  const merchantId = session?.user?.merchantId;
   const t = usePortalI18n();
 
   const [merchant, setMerchant] = useState<MerchantData | null>(null);

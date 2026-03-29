@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
 import { defaultLocale, locales, LOCALE_COOKIE, type Locale } from '@/i18n/config';
 
 function detectLocale(request: NextRequest): Locale {
@@ -57,10 +56,10 @@ export async function middleware(request: NextRequest) {
     return respond();
   }
 
-  const token = await getToken({ req: request });
+  // Read Firebase session cookie
+  const sessionCookie = request.cookies.get('firebase-session')?.value;
 
-  // Not authenticated — redirect to login
-  if (!token) {
+  if (!sessionCookie) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     const redirectRes = NextResponse.redirect(loginUrl);
@@ -74,16 +73,22 @@ export async function middleware(request: NextRequest) {
     return redirectRes;
   }
 
+  let role = 'USER';
+  try {
+    const session = JSON.parse(sessionCookie);
+    role = session.role || 'USER';
+  } catch { /* invalid cookie, treat as USER */ }
+
   // Merchant routes — require MERCHANT or ADMIN role
   if (pathname.startsWith('/merchant')) {
-    if (token.role !== 'MERCHANT' && token.role !== 'ADMIN') {
+    if (role !== 'MERCHANT' && role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }
 
   // Admin routes — require ADMIN role
   if (pathname.startsWith('/admin')) {
-    if (token.role !== 'ADMIN') {
+    if (role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }

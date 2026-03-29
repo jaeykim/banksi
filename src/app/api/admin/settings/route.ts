@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getSession } from '@/lib/auth-session';
 import { prisma } from '@/lib/prisma';
 
 const ALLOWED_KEYS = [
@@ -15,7 +14,7 @@ const ALLOWED_KEYS = [
 // GET /api/admin/settings — List all system settings
 export async function GET(_request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getSession();
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
@@ -47,7 +46,7 @@ export async function GET(_request: NextRequest) {
 // PUT /api/admin/settings — Update settings (partial update)
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getSession();
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }

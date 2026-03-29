@@ -21,6 +21,7 @@ export async function createMerchantWithWallet(opts: {
   userEmail?: string;
   userPasswordHash?: string;
   userName?: string;
+  firebaseUid?: string;
 }) {
   let slug = opts.slug || slugify(opts.name);
   const existing = await prisma.merchant.findUnique({ where: { slug } });
@@ -57,11 +58,12 @@ export async function createMerchantWithWallet(opts: {
         where: { id: opts.userId },
         data: { merchantId: m.id, role: 'MERCHANT' },
       });
-    } else if (opts.userEmail && opts.userPasswordHash) {
+    } else if (opts.userEmail) {
       await tx.user.create({
         data: {
           email: opts.userEmail,
-          passwordHash: opts.userPasswordHash,
+          passwordHash: opts.userPasswordHash || null,
+          firebaseUid: opts.firebaseUid || null,
           name: opts.userName || opts.name,
           role: 'MERCHANT',
           merchantId: m.id,

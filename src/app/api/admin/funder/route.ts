@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getSession } from '@/lib/auth-session';
 import { prisma } from '@/lib/prisma';
 import { getChainAdapter } from '@/lib/chains/registry';
 
@@ -61,7 +60,7 @@ function formatBalance(raw: string, chainId: string): string {
 // GET /api/admin/funder — Check gas funder wallet balance across all chains
 export async function GET(_request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getSession();
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }

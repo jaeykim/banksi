@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/components/providers';
 import { useEffect, useState, useCallback } from 'react';
 import { PaymentStatusBadge } from '@/components/payment/payment-status';
 import { QrDisplay } from '@/components/payment/qr-display';
@@ -43,7 +43,7 @@ interface Payment {
 
 export default function MerchantPaymentsPage() {
   const { data: session } = useSession();
-  const merchantId = (session?.user as { merchantId?: string })?.merchantId;
+  const merchantId = session?.user?.merchantId;
 
   const [payments, setPayments] = useState<Payment[]>([]);
   const [chains, setChains] = useState<Chain[]>([]);
