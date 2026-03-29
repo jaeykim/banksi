@@ -60,12 +60,12 @@ function PortalLayoutInner({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen">
       <aside className="fixed inset-y-0 left-0 z-30 w-56 bg-sidebar-bg flex flex-col">
-        <div className="flex h-14 items-center gap-2 px-4 border-b border-white/10">
+        <Link href="/" className="flex h-14 items-center gap-2 px-4 border-b border-white/10 hover:bg-white/5 transition-colors">
           <div className="h-7 w-7 rounded-md bg-primary-light flex items-center justify-center">
             <span className="text-sm font-bold text-white">B</span>
           </div>
           <span className="text-base font-semibold text-white">Banksi</span>
-        </div>
+        </Link>
 
         <nav className="flex-1 px-3 py-4 space-y-1">
           {navItems.map((item) => {
