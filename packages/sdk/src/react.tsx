@@ -49,6 +49,7 @@ export function BanksiPayButton({
   const [walletLoading, setWalletLoading] = useState(false);
   const [walletSent, setWalletSent] = useState(false);
   const [selTokenData, setSelTokenData] = useState<ChainToken | null>(null);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
   const banksiUrl = config.baseUrl || 'https://banksi.vercel.app';
 
@@ -89,6 +90,18 @@ export function BanksiPayButton({
     }
   };
 
+  const connectWallet = useCallback(async () => {
+    const ethereum = (window as unknown as { ethereum?: EthProvider }).ethereum;
+    if (!ethereum) { setError('No wallet detected. Install MetaMask or similar.'); return; }
+    setError('');
+    try {
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' }) as string[];
+      if (accounts?.length) setWalletAddress(accounts[0]);
+    } catch { setError('Wallet connection cancelled.'); }
+  }, []);
+
+  const disconnectWallet = () => { setWalletAddress(null); };
+
   const handleTokenSelect = useCallback(async (chain: string, token: string) => {
     setError('');
     setLoading(true);
@@ -119,17 +132,18 @@ export function BanksiPayButton({
   const handleWalletPay = async () => {
     if (!payment || !selTokenData) return;
     const ethereum = (window as unknown as { ethereum?: EthProvider }).ethereum;
-    if (!ethereum) {
-      setError('No wallet detected. Install MetaMask or similar.');
-      return;
-    }
+    if (!ethereum) { setError('No wallet detected.'); return; }
     setWalletLoading(true);
     setError('');
     try {
-      // 1. Connect wallet
-      const accounts = await ethereum.request({ method: 'eth_requestAccounts' }) as string[];
-      if (!accounts?.length) throw new Error('No account selected');
-      const from = accounts[0];
+      // Use already connected wallet or connect now
+      let from = walletAddress;
+      if (!from) {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' }) as string[];
+        if (!accounts?.length) throw new Error('No account selected');
+        from = accounts[0];
+        setWalletAddress(from);
+      }
 
       // 2. Switch chain if needed
       const targetHex = CHAIN_HEX[selChain];
@@ -226,6 +240,23 @@ export function BanksiPayButton({
             {/* ── Step: Select chain & token ── */}
             {step === 'select' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {/* Wallet connection */}
+                <div>
+                  <p style={S.label}>Wallet</p>
+                  {walletAddress ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 10, background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', flexShrink: 0 }} />
+                      <span style={{ fontSize: 12, fontFamily: 'monospace', color: '#166534', flex: 1 }}>{walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</span>
+                      <button onClick={disconnectWallet} style={{ fontSize: 10, color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Disconnect</button>
+                    </div>
+                  ) : (
+                    <button onClick={connectWallet} style={{ width: '100%', padding: '10px 16px', fontSize: 12, fontWeight: 600, borderRadius: 10, border: '2px solid #e5e7eb', background: '#fff', color: '#374151', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                      Connect Wallet
+                    </button>
+                  )}
+                </div>
+
                 <div>
                   <p style={S.label}>Network</p>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>

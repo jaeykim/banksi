@@ -35,6 +35,7 @@ export default function CafeExamplePage() {
   const [copied, setCopied] = useState(false);
   const [wLoading, setWLoading] = useState(false);
   const [wSent, setWSent] = useState(false);
+  const [walletAddr, setWalletAddr] = useState<string|null>(null);
 
   const total = Array.from(cart.entries()).reduce((s,[id,q]) => { const i=menu.find(m=>m.id===id); return s+(i?i.price*q:0); }, 0);
   const cartCount = Array.from(cart.values()).reduce((s,q) => s+q, 0);
@@ -63,18 +64,24 @@ export default function CafeExamplePage() {
     finally { setLoading(false); }
   }, [total]);
 
+  const connectWallet = useCallback(async () => {
+    const eth = (window as unknown as {ethereum?:{request:(a:{method:string;params?:unknown[]})=>Promise<unknown>}}).ethereum;
+    if(!eth){ setError('No wallet detected.'); return; }
+    try { const accs=await eth.request({method:'eth_requestAccounts'}) as string[]; if(accs?.length) setWalletAddr(accs[0]); } catch { setError('Connection cancelled.'); }
+  }, []);
+
   const handleWallet = useCallback(async () => {
     if(!payment) return;
     const eth = (window as unknown as {ethereum?:{request:(a:{method:string;params?:unknown[]})=>Promise<unknown>}}).ethereum;
     if(!eth){ setError('No wallet detected.'); return; }
     setWLoading(true); setError('');
     try {
-      const accs = await eth.request({method:'eth_requestAccounts'}) as string[];
-      if(!accs?.length) throw new Error('No account');
+      let from = walletAddr;
+      if(!from){ const accs=await eth.request({method:'eth_requestAccounts'}) as string[]; if(!accs?.length) throw new Error('No account'); from=accs[0]; setWalletAddr(from); }
       const hex = CHAIN_HEX[selChain];
       if(hex){ const cur=await eth.request({method:'eth_chainId'}) as string; if(cur!==hex) try{await eth.request({method:'wallet_switchEthereumChain',params:[{chainId:hex}]})}catch{setError('Switch chain.');setWLoading(false);return;} }
-      const cd=chains.find(c=>c.id===selChain); const td=cd?.tokens.find(t=>t.id===selToken);
-      if(td?.contractAddress){ const data=buildErc20Tx(payment.address,payment.amountExpected,td.decimals||6); await eth.request({method:'eth_sendTransaction',params:[{from:accs[0],to:td.contractAddress,data,value:'0x0'}]}); }
+      const c=chains.find(x=>x.id===selChain); const td=c?.tokens.find(t=>t.id===selToken);
+      if(td?.contractAddress){ const data=buildErc20Tx(payment.address,payment.amountExpected,td.decimals||6); await eth.request({method:'eth_sendTransaction',params:[{from,to:td.contractAddress,data,value:'0x0'}]}); }
       setWSent(true);
     } catch(e:unknown){ const m=e instanceof Error?e.message:'Failed'; if(!m.includes('rejected')&&!m.includes('denied')) setError(m); }
     finally { setWLoading(false); }
@@ -163,6 +170,17 @@ export default function CafeExamplePage() {
 
               {payStep==='select' && (
                 <div style={{display:'flex',flexDirection:'column',gap:16}}>
+                  <div><p style={{fontSize:10,fontWeight:700,color:'#9ca3af',textTransform:'uppercase',letterSpacing:1,marginBottom:8}}>Wallet</p>
+                    {walletAddr ? (
+                      <div style={{display:'flex',alignItems:'center',gap:8,padding:'8px 12px',borderRadius:10,background:'#f0fdf4',border:'1px solid #bbf7d0',marginBottom:12}}>
+                        <span style={{width:8,height:8,borderRadius:'50%',background:'#22c55e',flexShrink:0}} />
+                        <span style={{fontSize:12,fontFamily:'monospace',color:'#166534',flex:1}}>{walletAddr.slice(0,6)}...{walletAddr.slice(-4)}</span>
+                        <button onClick={()=>setWalletAddr(null)} style={{fontSize:10,color:'#9ca3af',background:'none',border:'none',cursor:'pointer',textDecoration:'underline'}}>Disconnect</button>
+                      </div>
+                    ) : (
+                      <button onClick={connectWallet} style={{width:'100%',padding:'10px 16px',fontSize:12,fontWeight:600,borderRadius:10,border:'2px solid #e5e7eb',background:'#fff',color:'#374151',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6,marginBottom:12}}>⚡ Connect Wallet</button>
+                    )}
+                  </div>
                   <div><p style={{fontSize:10,fontWeight:700,color:'#9ca3af',textTransform:'uppercase',letterSpacing:1,marginBottom:8}}>Network</p>
                     <div style={{display:'flex',flexWrap:'wrap',gap:6}}>{chains.map(c=>(<button key={c.id} style={{...chip(selChain===c.id),display:'flex',alignItems:'center',gap:6}} onClick={()=>{setSelChain(c.id);setSelToken('');}}><img src={`/assets/chains/${c.id}.svg`} alt="" width={16} height={16} />{c.name}</button>))}</div>
                   </div>
