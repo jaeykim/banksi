@@ -6,7 +6,7 @@ interface MenuItem { id: string; name: string; desc: string; price: number; emoj
 interface Chain { id: string; name: string; tokens: { id: string; symbol: string; name: string; contractAddress?: string; decimals?: number }[]; }
 interface PayResult { paymentId: string; address: string; amountExpected: string; tokenSymbol: string; chainName: string; }
 
-const CHAIN_HEX: Record<string, string> = { ethereum: '0x1', bsc: '0x38', arbitrum: '0xa4b1' };
+const CHAIN_HEX: Record<string, string> = { ethereum: '0x1', bsc: '0x38', arbitrum: '0xa4b1', base: '0x2105' };
 
 const menu: MenuItem[] = [
   { id: '1', name: 'Americano', desc: 'Rich espresso with hot water', price: 4.50, emoji: '☕' },

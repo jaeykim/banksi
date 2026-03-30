@@ -44,6 +44,14 @@ async function main() {
       isEvm: true,
     },
     {
+      id: "base",
+      name: "Base",
+      chainIdNum: 8453,
+      rpcUrl: "https://mainnet.base.org",
+      explorerUrl: "https://basescan.org",
+      isEvm: true,
+    },
+    {
       id: "tron",
       name: "Tron",
       chainIdNum: null,
@@ -132,6 +140,14 @@ async function main() {
       symbol: "USDC",
       name: "USD Coin",
       contractAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+      decimals: 6,
+    },
+    // Base
+    {
+      chainId: "base",
+      symbol: "USDC",
+      name: "USD Coin",
+      contractAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       decimals: 6,
     },
     // Tron

@@ -96,6 +96,7 @@ const DB_CHAIN_ALIASES: Record<string, string> = {
   polygon: 'evm:137',
   bsc: 'evm:56',
   arbitrum: 'evm:42161',
+  base: 'evm:8453',
   tron: 'tron:mainnet',
   solana: 'solana:mainnet',
 };

@@ -23,7 +23,7 @@ interface PaymentData {
 }
 
 const CHAIN_ID_MAP: Record<string, number> = {
-  ethereum: 1, polygon: 137, bsc: 56, arbitrum: 42161,
+  ethereum: 1, polygon: 137, bsc: 56, arbitrum: 42161, base: 8453,
 };
 
 function buildErc20TransferData(to: string, amount: string, decimals: number): string {

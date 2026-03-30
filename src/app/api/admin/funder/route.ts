@@ -17,6 +17,7 @@ const NATIVE_SYMBOLS: Record<string, string> = {
   ethereum: 'ETH',
   bsc: 'BNB',
   arbitrum: 'ETH',
+  base: 'ETH',
   tron: 'TRX',
   solana: 'SOL',
 };
@@ -26,6 +27,7 @@ const MIN_BALANCE: Record<string, number> = {
   ethereum: 0.01,
   bsc: 0.01,
   arbitrum: 0.005,
+  base: 0.005,
   tron: 100,
   solana: 0.1,
 };

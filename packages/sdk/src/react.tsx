@@ -6,7 +6,7 @@ import { BanksiClient, type BanksiConfig, type PaymentResult, type Chain, type C
 type EthProvider = { request: (a: { method: string; params?: unknown[] }) => Promise<unknown> };
 
 const CHAIN_HEX: Record<string, string> = {
-  ethereum: '0x1', bsc: '0x38', arbitrum: '0xa4b1', polygon: '0x89',
+  ethereum: '0x1', bsc: '0x38', arbitrum: '0xa4b1', base: '0x2105', polygon: '0x89',
 };
 
 function buildErc20Transfer(to: string, amount: string, decimals: number): string {

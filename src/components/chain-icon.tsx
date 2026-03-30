@@ -2,6 +2,7 @@ const CHAIN_LOGOS: Record<string, string> = {
   ethereum: '/assets/chains/ethereum.svg',
   bsc: '/assets/chains/bsc.svg',
   arbitrum: '/assets/chains/arbitrum.svg',
+  base: '/assets/chains/base.svg',
   tron: '/assets/chains/tron.svg',
   solana: '/assets/chains/solana.svg',
 };
